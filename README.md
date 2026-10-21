@@ -54,17 +54,18 @@ Downloads Lifecycle only reads it, once, when the file appears, so the source su
 
 ## Download
 
-1. Get **`DownloadsLifecycle-x.y.z-win-x64.exe`** from [Releases](https://github.com/lojekq/DownloadsLifecycle/releases/latest). Single file, no install, no admin.
-2. Smaller build: `DownloadsLifecycle-x.y.z-win-x64-fd.zip` (needs [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0)).
+1. **[Download DownloadsLifecycle.exe](https://github.com/lojekq/DownloadsLifecycle/releases/latest/download/DownloadsLifecycle.exe)** (latest release). One file, no admin rights.
+2. Smaller build: [`DownloadsLifecycle-fd.zip`](https://github.com/lojekq/DownloadsLifecycle/releases/latest/download/DownloadsLifecycle-fd.zip) (needs [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0)).
 3. Optional check: `gh attestation verify <file> -R lojekq/DownloadsLifecycle` or compare with `SHA256SUMS.txt`.
 
 Requirements: Windows 11 x64. Windows 10 22H2 should work but is not tested.
 
 ## First run
 
-Put the exe into `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` first: from there it adds the right-click menu and the Start menu shortcut by itself.
-On the first start Windows may show a SmartScreen warning (see FAQ). The first screen shows how many files are there and offers the two auto-rules, both off.
-The app then lives in the tray; turn on **Start with Windows** in Settings to get the daily reminder.
+Run the downloaded exe from anywhere. Windows may show a SmartScreen warning first (see FAQ).
+The app offers to install itself: **Install** copies it to `%LOCALAPPDATA%\Programs\DownloadsLifecycle\`, adds the right-click menu, a Start menu shortcut,
+autostart (for the daily reminder) and an entry in Settings → Apps; no admin rights. **Run without installing** keeps it portable.
+To update, run a newer exe the same way: it replaces the installed one and restarts it. The first screen shows how many files are there and offers the two auto-rules, both off.
 
 ## Settings
 
@@ -76,8 +77,10 @@ The app then lives in the tray; turn on **Start with Windows** in Settings to ge
 | Size limit for rules | 4 GB | Bigger files are never let go by a rule, only by you |
 | Ask when more lifetimes end at once than | 20 | After a holiday they wait in the inbox for your OK |
 | Daily reminder | on, 19:00 | "Inbox: 12 files, 3.4 GB to clean"; not during a fullscreen game or presentation |
-| "Lifetime" in the right-click menu | on when the exe is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` | In Windows 11 it is under **Show more options** (Shift+F10) |
-| Language, theme, Start with Windows, Start menu shortcut, updates | Windows / off / on | The usual |
+| "Lifetime" in the right-click menu | on after install | In Windows 11 it is under **Show more options** (Shift+F10) |
+| Start with Windows, Start menu shortcut | on after install | Starts minimized to the tray; a shortcut in the Start menu |
+| Installation | — | Install, or Uninstall when installed |
+| Language, theme, updates | Windows / on | The usual |
 
 Settings, the index (`state.json`) and the journal (`journal.jsonl`) live in `%APPDATA%\DownloadsLifecycle`.
 
@@ -100,14 +103,14 @@ Smart App Control, if it is on, blocks unsigned files with no way to allow one; 
 
 <details><summary>My antivirus flags it</summary>
 
-It is a false positive: the app has no installer, no packer and no obfuscation; it only moves files to the Recycle Bin when you ask.
+It is a false positive: the app has no packer and no obfuscation, installs only into your user folder and moves files to the Recycle Bin only when you ask.
 Please report it to your antivirus vendor and open an issue with the detection name and the SHA256 of the file.
 </details>
 
 <details><summary>I don't see "Lifetime" when I right-click a file</summary>
 
 Windows 11 shows menu items of classic apps under **Show more options** (or Shift+F10). The item appears by itself only when the exe
-is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\`; otherwise turn it on in Settings. Lifetime works for files in Downloads only.
+is installed; otherwise turn it on in Settings. Lifetime works for files in Downloads only.
 </details>
 
 <details><summary>Why is the source "unknown"?</summary>
@@ -118,7 +121,8 @@ a non-NTFS drive, and files unblocked before the app first saw them have none. E
 
 <details><summary>How do I uninstall?</summary>
 
-About → **Remove data and autostart** (it also removes the right-click menu), then delete the exe.
+Settings → **Uninstall**, or Windows Settings → Apps → Downloads Lifecycle → Uninstall. It removes the right-click menu too; you choose whether settings, the index and the journal go as well.
+Without installing: About → **Remove data and autostart**, then delete the exe.
 </details>
 
 ## Privacy

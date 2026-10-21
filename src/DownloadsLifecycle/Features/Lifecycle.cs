@@ -16,10 +16,16 @@ public static class Lifecycle
 {
     static MenuItem? sortItem;
 
-    public static void Start(Application app)
+    /// <summary>Before the installer: --uninstall and "Remove data" take the Explorer menu away (RemoveData), Settings shows the app's section.</summary>
+    public static void Hooks()
     {
         SettingsPage.AppSection = () => new RulesSettings();
         App.RemoveData = () => { ExplorerMenu.Unregister(); return null; };
+    }
+
+    /// <summary>After the single-instance check: the services.</summary>
+    public static void Start(Application app)
+    {
         if (Args.Current.Demo) return; // DemoData fills the snapshot; nothing runs, nothing is written
         Engine.Start(app.Dispatcher);
 #if DEBUG
