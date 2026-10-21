@@ -1,22 +1,21 @@
 using System.Windows.Threading;
 using DownloadsLifecycle.Features;
-using DownloadsLifecycle.Shell;
 
 namespace DownloadsLifecycle.Demo;
 
-/// <summary>--autoplay: a 6–8 s scenario for gif.ps1 (DispatcherTimer + list of steps). The app spec defines its own steps.</summary>
+/// <summary>--autoplay for gif.ps1 (08 §10): in the inbox pick the duplicate, an installer and the extracted zip, let them go, the undo bar fades.</summary>
 public static class Autoplay
 {
     public static void Start(MainWindow w)
     {
+        Actions.UndoWindow = TimeSpan.FromSeconds(3); // the GIF is 8 s: the bar has to go within it
         // Seconds after the window is on screen; gif.ps1 starts recording when --rect-file appears, ffmpeg needs ~1 s
         (double At, Action Do)[] steps =
         [
-            (2.0, () => MainPage.Items.Add(new(Loc.T("Demo.Backup"), @"D:\Backup\demo", false))),
-            (3.0, () => MainPage.Items[^1].On = true),
-            (4.0, () => MainPage.Items[2].On = true),
-            (5.5, () => w.Navigate("settings")),
-            (7.0, () => w.Navigate("main")),
+            (1.8, () => InboxPage.Current?.Select(r => r.Item.Suggestion?.Type == "duplicate")),
+            (2.5, () => InboxPage.Current?.Select(r => r.Item.Suggestion?.Type == "installer" && r.Name.StartsWith("VSCode"))),
+            (3.2, () => InboxPage.Current?.Select(r => r.Item.Suggestion?.Type == "archive")),
+            (4.2, () => InboxPage.Current?.ReleaseSelected()),
         ];
         var started = DateTime.UtcNow;
         var next = 0;

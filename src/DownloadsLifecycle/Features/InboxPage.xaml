@@ -1,0 +1,100 @@
+<Page x:Class="DownloadsLifecycle.Features.InboxPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:l="clr-namespace:DownloadsLifecycle.Shell"
+      xmlns:f="clr-namespace:DownloadsLifecycle.Features">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="Vis" />
+        <DataTemplate x:Key="RowTemplate" DataType="{x:Type f:Row}">
+            <Grid Margin="0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="36" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ui:SymbolIcon Symbol="{Binding Icon}" FontSize="22" Foreground="{DynamicResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="4,0,12,0">
+                    <ui:TextBlock Text="{Binding Name}" FontTypography="BodyStrong" TextTrimming="CharacterEllipsis" ToolTip="{Binding Item.Path}" />
+                    <DockPanel Margin="0,4,0,0">
+                        <Grid Width="18" Height="18" Margin="0,0,6,0">
+                            <Ellipse Fill="{Binding SiteBrush}" />
+                            <TextBlock Text="{Binding SiteLetter}" Foreground="White" FontSize="10" FontWeight="SemiBold"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Grid>
+                        <ui:TextBlock VerticalAlignment="Center" FontTypography="Caption" Appearance="Secondary" Margin="0,0,10,0">
+                            <Run Text="{Binding SiteText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding SizeText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding AgeText, Mode=OneWay}" />
+                        </ui:TextBlock>
+                        <Border x:Name="BadgeBox" HorizontalAlignment="Left" CornerRadius="4" Padding="6,1"
+                                Background="{DynamicResource SystemFillColorCautionBackgroundBrush}">
+                            <ui:TextBlock Text="{Binding Badge}" FontTypography="Caption" TextTrimming="CharacterEllipsis"
+                                          Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        </Border>
+                    </DockPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button Content="{l:T Inbox.Keep}" Click="KeepClick" Margin="0,0,4,0" Padding="10,4" ToolTip="K" />
+                    <ui:Button Content="{l:T Inbox.Move}" Click="MoveClick" Margin="0,0,4,0" Padding="10,4" ToolTip="M" />
+                    <ui:Button Click="TtlClick" Margin="0,0,4,0" Padding="10,4" ToolTip="T">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{l:T Inbox.Ttl}" />
+                            <ui:SymbolIcon Symbol="ChevronDown16" FontSize="12" Margin="4,0,0,0" />
+                        </StackPanel>
+                    </ui:Button>
+                    <ui:Button Content="{l:T Inbox.Release}" Click="ReleaseClick" Padding="10,4" Appearance="Primary" ToolTip="Del" />
+                </StackPanel>
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Badge}" Value="{x:Null}">
+                    <Setter TargetName="BadgeBox" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Cleanable}" Value="False">
+                    <Setter TargetName="BadgeBox" Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Margin="24,12,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <ui:TextBlock FontTypography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{l:T Page.Inbox}" />
+                <ui:TextBlock x:Name="SummaryText" Appearance="Secondary" Margin="0,4,0,0" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <ui:Button x:Name="SeenButton" Content="{l:T Inbox.MarkSeen}" Click="SeenClick" Margin="0,0,8,0" />
+                <ui:Button x:Name="AcceptButton" Content="{l:T Inbox.AcceptAll}" Click="AcceptClick" Appearance="Primary" Icon="{ui:SymbolIcon Delete24}" />
+            </StackPanel>
+        </Grid>
+
+
+        <ui:Card x:Name="Welcome" Grid.Row="1" Margin="0,0,0,12" Visibility="Collapsed">
+            <StackPanel>
+                <ui:TextBlock x:Name="WelcomeText" FontTypography="Subtitle" TextWrapping="Wrap" />
+                <ui:TextBlock Text="{l:T Welcome.Rules}" Appearance="Secondary" Margin="0,8,0,8" TextWrapping="Wrap" />
+                <CheckBox x:Name="WelcomeExpired" Content="{l:T Rules.Expired}" />
+                <CheckBox x:Name="WelcomeDuplicates" Content="{l:T Rules.Duplicates}" Margin="0,4,0,12" />
+                <ui:Button Content="{l:T Welcome.Open}" Appearance="Primary" Click="WelcomeClick" />
+            </StackPanel>
+        </ui:Card>
+
+        <ui:ListView x:Name="List" Grid.Row="2" SelectionMode="Extended" ItemTemplate="{StaticResource RowTemplate}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled" PreviewKeyDown="ListKeyDown" />
+        <StackPanel x:Name="EmptyPanel" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <ui:SymbolIcon Symbol="CheckmarkCircle24" FontSize="48" Foreground="{DynamicResource SystemFillColorSuccessBrush}" HorizontalAlignment="Center" />
+            <ui:TextBlock Text="{l:T Inbox.Empty}" FontTypography="Subtitle" HorizontalAlignment="Center" Margin="0,8,0,0" />
+            <ui:TextBlock x:Name="NextReminderText" Appearance="Secondary" HorizontalAlignment="Center" Margin="0,4,0,0" />
+        </StackPanel>
+
+    </Grid>
+</Page>

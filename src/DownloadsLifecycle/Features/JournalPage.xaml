@@ -1,0 +1,60 @@
+<Page x:Class="DownloadsLifecycle.Features.JournalPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:l="clr-namespace:DownloadsLifecycle.Shell"
+      xmlns:f="clr-namespace:DownloadsLifecycle.Features">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="Vis" />
+    </Page.Resources>
+    <Grid Margin="24,12,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+                <ui:TextBlock FontTypography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{l:T Page.Journal}" />
+                <ui:TextBlock Text="{l:T Journal.Subtitle}" Appearance="Secondary" Margin="0,4,0,0" TextWrapping="Wrap" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <ui:ToggleSwitch x:Name="RulesOnly" Content="{l:T Journal.RulesOnly}" Click="FilterClick" Margin="0,0,16,0" />
+                <ui:Button Content="{l:T Journal.Bin}" Icon="{ui:SymbolIcon Delete24}" Click="BinClick" />
+            </StackPanel>
+        </Grid>
+
+        <DataGrid x:Name="Table" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column"
+                  GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{l:T Journal.Time}" Binding="{Binding Time}" Width="135" />
+                <DataGridTextColumn Header="{l:T Journal.Action}" Binding="{Binding Action}" Width="120" />
+                <DataGridTemplateColumn Header="{l:T Files.Name}" Width="*" MinWidth="180">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type f:JournalRow}">
+                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Where}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="{l:T Journal.Reason}" Binding="{Binding Reason}" Width="*" MinWidth="160" />
+                <DataGridTextColumn Header="{l:T Journal.By}" Binding="{Binding By}" Width="125" />
+                <DataGridTemplateColumn Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type f:JournalRow}">
+                            <Grid>
+                                <ui:Button Content="{l:T Journal.Return}" Padding="8,2" Click="ReturnClick"
+                                           Visibility="{Binding CanReturn, Converter={StaticResource Vis}}" />
+                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}"
+                                           Visibility="{Binding InBin, Converter={StaticResource Vis}}" />
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <ui:TextBlock x:Name="EmptyText" Grid.Row="1" Text="{l:T Journal.Empty}" Appearance="Tertiary" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
+</Page>

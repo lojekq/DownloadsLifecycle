@@ -7,7 +7,6 @@
   <data name="Tray.Open" xml:space="preserve"><value>Открыть</value></data>
   <data name="Tray.Exit" xml:space="preserve"><value>Выход</value></data>
   <data name="Tray.Hidden" xml:space="preserve"><value>Программа продолжает работать в области уведомлений. Чтобы выйти, щёлкните значок правой кнопкой и выберите «Выход».</value></data>
-  <data name="Page.Main" xml:space="preserve"><value>Главная</value></data>
   <data name="Page.Settings" xml:space="preserve"><value>Настройки</value></data>
   <data name="Page.About" xml:space="preserve"><value>О программе</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Язык</value></data>
@@ -43,13 +42,162 @@
   <data name="Hotkey.Placeholder" xml:space="preserve"><value>Нажмите сочетание клавиш</value></data>
   <data name="Hotkey.Busy" xml:space="preserve"><value>Занято другой программой</value></data>
   <data name="Hotkey.Failed" xml:space="preserve"><value>Не удалось зарегистрировать</value></data>
-  <data name="Sample.Hotkey" xml:space="preserve"><value>Сочетание клавиш для окна</value></data>
-  <data name="Main.Title" xml:space="preserve"><value>Задачи</value></data>
-  <data name="Main.Subtitle" xml:space="preserve"><value>Пример страницы шаблона. Замените её страницами программы.</value></data>
-  <data name="Main.Empty" xml:space="preserve"><value>Пока пусто.</value></data>
-  <data name="Demo.Build" xml:space="preserve"><value>Сборка проекта</value></data>
-  <data name="Demo.Dataset" xml:space="preserve"><value>Загрузка датасета</value></data>
-  <data name="Demo.Report" xml:space="preserve"><value>Отчёт для Alex</value></data>
-  <data name="Demo.Daily" xml:space="preserve"><value>каждый день в 18:00</value></data>
-  <data name="Demo.Backup" xml:space="preserve"><value>Ночная копия</value></data>
+  <data name="Page.Inbox" xml:space="preserve"><value>Входящие</value></data>
+  <data name="Page.Files" xml:space="preserve"><value>Все файлы</value></data>
+  <data name="Page.Journal" xml:space="preserve"><value>Журнал</value></data>
+  <data name="Notice.Title" xml:space="preserve"><value>Не выполнено</value></data>
+  <data name="Inbox.Keep" xml:space="preserve"><value>Оставить</value></data>
+  <data name="Inbox.Move" xml:space="preserve"><value>Переложить…</value></data>
+  <data name="Inbox.Release" xml:space="preserve"><value>Отпустить</value></data>
+  <data name="Inbox.Ttl" xml:space="preserve"><value>Срок</value></data>
+  <data name="Inbox.MarkSeen" xml:space="preserve"><value>Всё просмотрено</value></data>
+  <data name="Inbox.AcceptAll" xml:space="preserve"><value>Принять все предложения…</value></data>
+  <data name="Inbox.Empty" xml:space="preserve"><value>Всё разобрано.</value></data>
+  <data name="Inbox.Undo" xml:space="preserve"><value>Отменить</value></data>
+  <data name="Inbox.Summary" xml:space="preserve"><value>Предложено к очистке: {0}, {1}</value></data>
+  <data name="Inbox.NothingToClean" xml:space="preserve"><value>Сейчас нечего убирать.</value></data>
+  <data name="Inbox.NextReminder" xml:space="preserve"><value>Следующее напоминание в {0}.</value></data>
+  <data name="Inbox.Released" xml:space="preserve"><value>Отпущено: {0} · освобождено {1}</value></data>
+  <data name="Welcome.Found" xml:space="preserve"><value>Найдено: {0}, {1}; источник известен у {2}.</value></data>
+  <data name="Welcome.Rules" xml:space="preserve"><value>Без вас ничего не удаляется. Два правила могут делать это сами; оба выключены, их можно включить позже в настройках.</value></data>
+  <data name="Welcome.Open" xml:space="preserve"><value>Открыть входящие</value></data>
+  <data name="Rules.Expired" xml:space="preserve"><value>Срок истёк → Корзина</value></data>
+  <data name="Rules.Expired.Note" xml:space="preserve"><value>Только файлы, которым вы сами задали срок. Если их больше лимита за раз или файл больше лимита размера, они ждут во входящих.</value></data>
+  <data name="Rules.Duplicates" xml:space="preserve"><value>Точные копии → Корзина</value></data>
+  <data name="Rules.Duplicates.Note" xml:space="preserve"><value>Только копии с именем вида «file (1).pdf» или «file - копия.pdf» и тем же содержимым, что у оригинала. Оригинал остаётся всегда.</value></data>
+  <data name="Confirm.Title" xml:space="preserve"><value>Отпустить предложенные файлы?</value></data>
+  <data name="Confirm.Text" xml:space="preserve"><value>{0}, {1} уйдут в Корзину. 8 секунд можно отменить, потом их можно вернуть из Корзины.</value></data>
+  <data name="Confirm.More" xml:space="preserve"><value>…и ещё {0}</value></data>
+  <data name="Confirm.Cancel" xml:space="preserve"><value>Отмена</value></data>
+  <data name="Files.Search" xml:space="preserve"><value>Поиск по имени, сайту или адресу</value></data>
+  <data name="Files.Group" xml:space="preserve"><value>Группировать по сайту</value></data>
+  <data name="Files.Installers" xml:space="preserve"><value>Установщики</value></data>
+  <data name="Files.Archives" xml:space="preserve"><value>Архивы</value></data>
+  <data name="Files.Duplicates" xml:space="preserve"><value>Дубли</value></data>
+  <data name="Files.NoSource" xml:space="preserve"><value>Без источника</value></data>
+  <data name="Files.Name" xml:space="preserve"><value>Имя</value></data>
+  <data name="Files.Site" xml:space="preserve"><value>Сайт</value></data>
+  <data name="Files.Size" xml:space="preserve"><value>Размер</value></data>
+  <data name="Files.Date" xml:space="preserve"><value>Скачан</value></data>
+  <data name="Files.Type" xml:space="preserve"><value>Тип</value></data>
+  <data name="Files.Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="Files.Referrer" xml:space="preserve"><value>Страница (ReferrerUrl)</value></data>
+  <data name="Files.Url" xml:space="preserve"><value>Адрес файла (HostUrl)</value></data>
+  <data name="Files.Copy" xml:space="preserve"><value>Копировать</value></data>
+  <data name="Files.Zone" xml:space="preserve"><value>Зона</value></data>
+  <data name="Files.OpenFolder" xml:space="preserve"><value>Показать в папке</value></data>
+  <data name="Journal.Subtitle" xml:space="preserve"><value>Всё, что отпущено, перенесено, получило срок или оставлено: вами или правилом. Навсегда ничего не удаляется.</value></data>
+  <data name="Journal.RulesOnly" xml:space="preserve"><value>Только правила</value></data>
+  <data name="Journal.Bin" xml:space="preserve"><value>Открыть Корзину</value></data>
+  <data name="Journal.Time" xml:space="preserve"><value>Время</value></data>
+  <data name="Journal.Action" xml:space="preserve"><value>Действие</value></data>
+  <data name="Journal.Reason" xml:space="preserve"><value>Почему</value></data>
+  <data name="Journal.By" xml:space="preserve"><value>Кто</value></data>
+  <data name="Journal.Return" xml:space="preserve"><value>Вернуть</value></data>
+  <data name="Journal.ShowInBin" xml:space="preserve"><value>Показать в Корзине</value></data>
+  <data name="Journal.Empty" xml:space="preserve"><value>Пока ничего не происходило.</value></data>
+  <data name="Journal.ReturnGone" xml:space="preserve"><value>Файла уже нет там, куда он был перенесён.</value></data>
+  <data name="Op.recycle" xml:space="preserve"><value>В Корзину</value></data>
+  <data name="Op.move" xml:space="preserve"><value>Перенесён</value></data>
+  <data name="Op.ttl" xml:space="preserve"><value>Срок</value></data>
+  <data name="Op.keep" xml:space="preserve"><value>Оставлен</value></data>
+  <data name="Op.gone" xml:space="preserve"><value>Уже отсутствовал</value></data>
+  <data name="By.User" xml:space="preserve"><value>Вы</value></data>
+  <data name="By.Rule" xml:space="preserve"><value>Правило: {0}</value></data>
+  <data name="Rule.expired" xml:space="preserve"><value>срок</value></data>
+  <data name="Rule.duplicate" xml:space="preserve"><value>дубль</value></data>
+  <data name="Reason.duplicate" xml:space="preserve"><value>Дубль {0}</value></data>
+  <data name="Reason.installer" xml:space="preserve"><value>Установлено: {0}</value></data>
+  <data name="Reason.archive" xml:space="preserve"><value>Распакован в {0}</value></data>
+  <data name="Reason.expired" xml:space="preserve"><value>Срок истёк</value></data>
+  <data name="Reason.return" xml:space="preserve"><value>Возвращён</value></data>
+  <data name="Settings.Folder" xml:space="preserve"><value>Downloads Lifecycle</value></data>
+  <data name="Settings.Folder.Watched" xml:space="preserve"><value>Отслеживаемая папка</value></data>
+  <data name="Settings.Folder.Open" xml:space="preserve"><value>Открыть</value></data>
+  <data name="Settings.Rules" xml:space="preserve"><value>Авто-правила</value></data>
+  <data name="Settings.Safety" xml:space="preserve"><value>Безопасность</value></data>
+  <data name="Safety.Grace" xml:space="preserve"><value>Не трогать файлы моложе, ч</value></data>
+  <data name="Safety.Grace.Note" xml:space="preserve"><value>Правило дублей не трогает файлы моложе этого.</value></data>
+  <data name="Safety.MaxSize" xml:space="preserve"><value>Лимит размера для правил, ГБ</value></data>
+  <data name="Safety.MaxSize.Note" xml:space="preserve"><value>Файлы больше лимита правила не трогают, только вы.</value></data>
+  <data name="Safety.Mass" xml:space="preserve"><value>Спрашивать, если сразу истекает больше</value></data>
+  <data name="Safety.Mass.Note" xml:space="preserve"><value>После отпуска или выключенного ПК они ждут во входящих вашего подтверждения.</value></data>
+  <data name="Settings.Reminder" xml:space="preserve"><value>Напоминание</value></data>
+  <data name="Settings.Reminder.Daily" xml:space="preserve"><value>Ежедневное напоминание</value></data>
+  <data name="Settings.Reminder.Note" xml:space="preserve"><value>Не показывается во время полноэкранной игры или презентации.</value></data>
+  <data name="Settings.Menu" xml:space="preserve"><value>Проводник</value></data>
+  <data name="Settings.Menu.Switch" xml:space="preserve"><value>«Срок жизни» в контекстном меню</value></data>
+  <data name="Settings.Menu.Note" xml:space="preserve"><value>В Windows 11 пункт находится в «Показать дополнительные параметры» (Shift+F10).</value></data>
+  <data name="Move.Choose" xml:space="preserve"><value>Выбрать папку…</value></data>
+  <data name="Move.Title" xml:space="preserve"><value>Переложить в</value></data>
+  <data name="Ttl.Days" xml:space="preserve"><value>{0} день|{0} дня|{0} дней</value></data>
+  <data name="Ttl.Pick" xml:space="preserve"><value>До даты…</value></data>
+  <data name="Ttl.Clear" xml:space="preserve"><value>Снять срок</value></data>
+  <data name="Ttl.Keep" xml:space="preserve"><value>оставить</value></data>
+  <data name="Ttl.Until" xml:space="preserve"><value>до {0}</value></data>
+  <data name="Ttl.Ended" xml:space="preserve"><value>истёк</value></data>
+  <data name="Menu.Lifetime" xml:space="preserve"><value>Срок жизни</value></data>
+  <data name="Menu.1d" xml:space="preserve"><value>1 день</value></data>
+  <data name="Menu.7d" xml:space="preserve"><value>7 дней</value></data>
+  <data name="Menu.30d" xml:space="preserve"><value>30 дней</value></data>
+  <data name="Menu.Keep" xml:space="preserve"><value>Оставить</value></data>
+  <data name="Menu.Clear" xml:space="preserve"><value>Снять срок</value></data>
+  <data name="Tray.Sort" xml:space="preserve"><value>Разобрать входящие</value></data>
+  <data name="Tray.Pause" xml:space="preserve"><value>Приостановить авто-правила</value></data>
+  <data name="Tray.Pause.Hour" xml:space="preserve"><value>На 1 час</value></data>
+  <data name="Tray.Pause.Restart" xml:space="preserve"><value>До перезапуска</value></data>
+  <data name="Tray.Pause.Resume" xml:space="preserve"><value>Возобновить</value></data>
+  <data name="Tray.OpenFolder" xml:space="preserve"><value>Открыть «Загрузки»</value></data>
+  <data name="Tray.Tooltip" xml:space="preserve"><value>Входящих: {0} · к очистке {1}</value></data>
+  <data name="Notify.Auto" xml:space="preserve"><value>Правила отправили в Корзину {0} ({1}).</value></data>
+  <data name="Notify.Ttl" xml:space="preserve"><value>Срок {0}: {1}.</value></data>
+  <data name="Notify.TtlOutside" xml:space="preserve"><value>Пропущено {0} вне «Загрузок»: срок работает только там.</value></data>
+  <data name="Notify.Reminder" xml:space="preserve"><value>Во входящих {0}, к очистке {1}.</value></data>
+  <data name="Unit.B" xml:space="preserve"><value>Б</value></data>
+  <data name="Unit.KB" xml:space="preserve"><value>КБ</value></data>
+  <data name="Unit.MB" xml:space="preserve"><value>МБ</value></data>
+  <data name="Unit.GB" xml:space="preserve"><value>ГБ</value></data>
+  <data name="Unit.TB" xml:space="preserve"><value>ТБ</value></data>
+  <data name="N.Files" xml:space="preserve"><value>{0} файл|{0} файла|{0} файлов</value></data>
+  <data name="Ago.Now" xml:space="preserve"><value>только что</value></data>
+  <data name="Ago.Minutes" xml:space="preserve"><value>{0} мин назад</value></data>
+  <data name="Ago.Hours" xml:space="preserve"><value>{0} ч назад</value></data>
+  <data name="Ago.Days" xml:space="preserve"><value>{0} день назад|{0} дня назад|{0} дней назад</value></data>
+  <data name="In.Minutes" xml:space="preserve"><value>через {0} мин</value></data>
+  <data name="In.Hours" xml:space="preserve"><value>через {0} ч</value></data>
+  <data name="In.Days" xml:space="preserve"><value>через {0} день|через {0} дня|через {0} дней</value></data>
+  <data name="Badge.Installer.exact" xml:space="preserve"><value>Установлено: {0} (точно)</value></data>
+  <data name="Badge.Installer.likely" xml:space="preserve"><value>Вероятно, установлено: {0} ({1})</value></data>
+  <data name="Badge.Installer.other" xml:space="preserve"><value>Установлена другая версия: {0}</value></data>
+  <data name="Why.name" xml:space="preserve"><value>совпало имя</value></data>
+  <data name="Why.version" xml:space="preserve"><value>совпали версия и издатель</value></data>
+  <data name="Why.msi" xml:space="preserve"><value>Windows Installer</value></data>
+  <data name="Badge.Archive" xml:space="preserve"><value>Распакован в {0} ({1}%)</value></data>
+  <data name="Badge.ArchiveHere" xml:space="preserve"><value>Распакован прямо здесь ({0}%)</value></data>
+  <data name="Badge.Duplicate" xml:space="preserve"><value>Дубль {0}</value></data>
+  <data name="Badge.Expired" xml:space="preserve"><value>Срок истёк</value></data>
+  <data name="Badge.Expires" xml:space="preserve"><value>Срок истекает {0}</value></data>
+  <data name="Site.Unknown" xml:space="preserve"><value>неизвестно</value></data>
+  <data name="Kind.Other" xml:space="preserve"><value>Файл</value></data>
+  <data name="Kind.Installer" xml:space="preserve"><value>Программа</value></data>
+  <data name="Kind.Archive" xml:space="preserve"><value>Архив</value></data>
+  <data name="Kind.Folder" xml:space="preserve"><value>Папка</value></data>
+  <data name="Zone.Internet" xml:space="preserve"><value>Интернет</value></data>
+  <data name="Zone.Restricted" xml:space="preserve"><value>Ограниченные</value></data>
+  <data name="Zone.Intranet" xml:space="preserve"><value>Локальная сеть</value></data>
+  <data name="Zone.Trusted" xml:space="preserve"><value>Надёжные</value></data>
+  <data name="Zone.Local" xml:space="preserve"><value>Этот компьютер</value></data>
+  <data name="Status.Kept" xml:space="preserve"><value>Оставлен</value></data>
+  <data name="Status.Until" xml:space="preserve"><value>До {0}</value></data>
+  <data name="Status.Suggested" xml:space="preserve"><value>Предложение</value></data>
+  <data name="Verdict.Ok" xml:space="preserve"><value>готово</value></data>
+  <data name="Verdict.Gone" xml:space="preserve"><value>файла уже нет</value></data>
+  <data name="Verdict.Outside" xml:space="preserve"><value>не в отслеживаемой папке</value></data>
+  <data name="Verdict.Changed" xml:space="preserve"><value>файл изменился, он будет проверен заново</value></data>
+  <data name="Verdict.Kept" xml:space="preserve"><value>оставлен</value></data>
+  <data name="Verdict.NotFixed" xml:space="preserve"><value>не на жёстком диске: Корзина может его не принять, удалите вручную</value></data>
+  <data name="Verdict.LongPath" xml:space="preserve"><value>слишком длинный путь, удалите вручную</value></data>
+  <data name="Verdict.InUse" xml:space="preserve"><value>открыт в другой программе</value></data>
+  <data name="Verdict.TooYoung" xml:space="preserve"><value>моложе защитного срока</value></data>
+  <data name="Verdict.TooBig" xml:space="preserve"><value>больше лимита размера</value></data>
 </root>

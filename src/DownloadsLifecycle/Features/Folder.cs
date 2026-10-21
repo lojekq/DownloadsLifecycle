@@ -29,6 +29,7 @@ public static class Folder
 
     internal static string Resolve(IReadOnlyList<string> unknown)
     {
+        if (Args.Current.Demo) return @"C:\Users\demo\Downloads"; // shown in screenshots: never a real user name
 #if DEBUG
         var i = unknown.ToList().IndexOf("--watch-dir");
         var dir = i >= 0 && i + 1 < unknown.Count ? System.IO.Path.GetFullPath(unknown[i + 1]) : Sandbox;
@@ -39,8 +40,7 @@ public static class Folder
 #endif
     }
 
-    public static bool Contains(string p) =>
-        string.Equals(System.IO.Path.GetDirectoryName(System.IO.Path.GetFullPath(p).TrimEnd('\\')), Path.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
+    public static bool Contains(string p) => Scanner.IsTopLevel(Path, p);
 
     /// <summary>
     /// VolumeSerial + 128-bit FileId (FILE_ID_INFO): survives renames and moves within the volume. Opened with FILE_READ_ATTRIBUTES only,

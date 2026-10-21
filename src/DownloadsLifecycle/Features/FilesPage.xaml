@@ -1,0 +1,118 @@
+<Page x:Class="DownloadsLifecycle.Features.FilesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:l="clr-namespace:DownloadsLifecycle.Shell"
+      xmlns:f="clr-namespace:DownloadsLifecycle.Features">
+    <Page.Resources>
+        <Style x:Key="Chip" TargetType="ToggleButton" BasedOn="{StaticResource {x:Type ToggleButton}}">
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="Padding" Value="10,4" />
+        </Style>
+        <Style x:Key="Label" TargetType="ui:TextBlock">
+            <Setter Property="FontTypography" Value="Caption" />
+            <Setter Property="Appearance" Value="Secondary" />
+            <Setter Property="Margin" Value="0,10,0,2" />
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="24,12,24,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <ui:TextBlock FontTypography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{l:T Page.Files}" Margin="0,0,0,12" />
+
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="420" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <ui:TextBox x:Name="Search" PlaceholderText="{l:T Files.Search}" Icon="{ui:SymbolIcon Search24}" ClearButtonEnabled="True" TextChanged="FilterChanged" />
+            <ui:ToggleSwitch x:Name="GroupSwitch" Grid.Column="1" Content="{l:T Files.Group}" Margin="16,0,0,0" Click="GroupChanged" />
+        </Grid>
+        <WrapPanel Grid.Row="2" Margin="0,0,0,8">
+            <ToggleButton x:Name="ChipInstallers" Content="{l:T Files.Installers}" Style="{StaticResource Chip}" Click="FilterChanged" />
+            <ToggleButton x:Name="ChipArchives" Content="{l:T Files.Archives}" Style="{StaticResource Chip}" Click="FilterChanged" />
+            <ToggleButton x:Name="ChipDuplicates" Content="{l:T Files.Duplicates}" Style="{StaticResource Chip}" Click="FilterChanged" />
+            <ToggleButton x:Name="ChipNoSource" Content="{l:T Files.NoSource}" Style="{StaticResource Chip}" Click="FilterChanged" />
+            <ui:TextBlock x:Name="CountText" Appearance="Tertiary" VerticalAlignment="Center" Margin="8,0,0,0" />
+        </WrapPanel>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition x:Name="SideColumn" Width="280" />
+            </Grid.ColumnDefinitions>
+            <DataGrid x:Name="Table" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Extended" HeadersVisibility="Column"
+                      GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False" SelectionChanged="SelectionChanged"
+                      IsSynchronizedWithCurrentItem="False"
+                      VirtualizingPanel.IsVirtualizingWhenGrouping="True">
+                <DataGrid.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="4,10,0,4">
+                                    <ui:TextBlock Text="{Binding Name}" FontTypography="BodyStrong" />
+                                    <ui:TextBlock Text="{Binding ItemCount, StringFormat=' ({0})'}" Appearance="Secondary" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </DataGrid.GroupStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="{l:T Files.Name}" Width="*" MinWidth="160" SortMemberPath="Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type f:Row}">
+                                <DockPanel>
+                                    <ui:SymbolIcon Symbol="{Binding Icon}" FontSize="16" Margin="0,0,8,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding Name}" />
+                                </DockPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn x:Name="SiteColumn" Header="{l:T Files.Site}" Binding="{Binding SiteText}" Width="Auto" />
+                    <DataGridTextColumn Header="{l:T Files.Size}" Binding="{Binding SizeText}" Width="Auto" SortMemberPath="Item.Size" />
+                    <DataGridTextColumn Header="{l:T Files.Date}" Binding="{Binding DateText}" Width="Auto" SortMemberPath="Item.CreatedUtc" />
+                    <DataGridTextColumn Header="{l:T Files.Status}" Binding="{Binding Status}" Width="Auto" />
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <ui:Card x:Name="Side" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Stretch" VerticalContentAlignment="Top" Padding="16">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel x:Name="Details">
+                        <ui:TextBlock Text="{Binding Name}" FontTypography="BodyStrong" TextWrapping="Wrap" />
+                        <ui:TextBlock Text="{Binding Badge}" FontTypography="Caption" TextWrapping="Wrap" Margin="0,4,0,0"
+                                      Foreground="{DynamicResource SystemFillColorCautionBrush}" />
+                        <WrapPanel Margin="0,10,0,0">
+                            <ui:Button Content="{l:T Inbox.Keep}" Click="KeepClick" Margin="0,0,4,4" Padding="10,4" />
+                            <ui:Button Content="{l:T Inbox.Move}" Click="MoveClick" Margin="0,0,4,4" Padding="10,4" />
+                            <ui:Button Content="{l:T Inbox.Ttl}" Click="TtlClick" Margin="0,0,4,4" Padding="10,4" />
+                            <ui:Button Content="{l:T Inbox.Release}" Appearance="Primary" Click="ReleaseClick" Margin="0,0,4,4" Padding="10,4" />
+                        </WrapPanel>
+                        <ui:TextBlock Text="{l:T Files.Referrer}" Style="{StaticResource Label}" />
+                        <DockPanel>
+                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyReferrer" ToolTip="{l:T Files.Copy}" VerticalAlignment="Top" />
+                            <ui:TextBlock Text="{Binding ReferrerText}" TextWrapping="Wrap" FontTypography="Caption" />
+                        </DockPanel>
+                        <ui:TextBlock Text="{l:T Files.Url}" Style="{StaticResource Label}" />
+                        <DockPanel>
+                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyUrl" ToolTip="{l:T Files.Copy}" VerticalAlignment="Top" />
+                            <ui:TextBlock Text="{Binding UrlText}" TextWrapping="Wrap" FontTypography="Caption" />
+                        </DockPanel>
+                        <ui:TextBlock Text="{l:T Files.Zone}" Style="{StaticResource Label}" />
+                        <ui:TextBlock Text="{Binding ZoneText}" FontTypography="Caption" />
+                        <ui:TextBlock Text="{l:T Files.Type}" Style="{StaticResource Label}" />
+                        <ui:TextBlock FontTypography="Caption"><Run Text="{Binding TypeText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding SizeText, Mode=OneWay}" /></ui:TextBlock>
+                        <ui:TextBlock Text="SHA-256" Style="{StaticResource Label}" />
+                        <ui:TextBlock Text="{Binding HashText}" TextWrapping="Wrap" FontFamily="Consolas" FontSize="11" />
+                        <ui:Button Content="{l:T Files.OpenFolder}" Icon="{ui:SymbolIcon FolderOpen24}" Click="OpenFolder" Margin="0,14,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+            </ui:Card>
+        </Grid>
+    </Grid>
+</Page>

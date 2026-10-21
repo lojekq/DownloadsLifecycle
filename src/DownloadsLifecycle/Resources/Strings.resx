@@ -7,7 +7,6 @@
   <data name="Tray.Open" xml:space="preserve"><value>Open</value></data>
   <data name="Tray.Exit" xml:space="preserve"><value>Exit</value></data>
   <data name="Tray.Hidden" xml:space="preserve"><value>Still running in the notification area. To quit, right-click the icon and choose Exit.</value></data>
-  <data name="Page.Main" xml:space="preserve"><value>Home</value></data>
   <data name="Page.Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Page.About" xml:space="preserve"><value>About</value></data>
   <data name="Settings.Language" xml:space="preserve"><value>Language</value></data>
@@ -43,13 +42,162 @@ Open the folder?</value></data>
   <data name="Hotkey.Placeholder" xml:space="preserve"><value>Press a key combination</value></data>
   <data name="Hotkey.Busy" xml:space="preserve"><value>Taken by another program</value></data>
   <data name="Hotkey.Failed" xml:space="preserve"><value>Could not register</value></data>
-  <data name="Sample.Hotkey" xml:space="preserve"><value>Hotkey to show the window</value></data>
-  <data name="Main.Title" xml:space="preserve"><value>Tasks</value></data>
-  <data name="Main.Subtitle" xml:space="preserve"><value>Sample page of the template. Replace it with the app's own pages.</value></data>
-  <data name="Main.Empty" xml:space="preserve"><value>Nothing here yet.</value></data>
-  <data name="Demo.Build" xml:space="preserve"><value>Project build</value></data>
-  <data name="Demo.Dataset" xml:space="preserve"><value>Dataset download</value></data>
-  <data name="Demo.Report" xml:space="preserve"><value>Report for Alex</value></data>
-  <data name="Demo.Daily" xml:space="preserve"><value>every day at 6 PM</value></data>
-  <data name="Demo.Backup" xml:space="preserve"><value>Nightly backup</value></data>
+  <data name="Page.Inbox" xml:space="preserve"><value>Inbox</value></data>
+  <data name="Page.Files" xml:space="preserve"><value>All files</value></data>
+  <data name="Page.Journal" xml:space="preserve"><value>Journal</value></data>
+  <data name="Notice.Title" xml:space="preserve"><value>Not done</value></data>
+  <data name="Inbox.Keep" xml:space="preserve"><value>Keep</value></data>
+  <data name="Inbox.Move" xml:space="preserve"><value>Move…</value></data>
+  <data name="Inbox.Release" xml:space="preserve"><value>Let go</value></data>
+  <data name="Inbox.Ttl" xml:space="preserve"><value>Lifetime</value></data>
+  <data name="Inbox.MarkSeen" xml:space="preserve"><value>Mark all as seen</value></data>
+  <data name="Inbox.AcceptAll" xml:space="preserve"><value>Accept all suggestions…</value></data>
+  <data name="Inbox.Empty" xml:space="preserve"><value>All sorted.</value></data>
+  <data name="Inbox.Undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="Inbox.Summary" xml:space="preserve"><value>Suggested for cleanup: {0}, {1}</value></data>
+  <data name="Inbox.NothingToClean" xml:space="preserve"><value>Nothing to clean up right now.</value></data>
+  <data name="Inbox.NextReminder" xml:space="preserve"><value>Next reminder at {0}.</value></data>
+  <data name="Inbox.Released" xml:space="preserve"><value>Let go: {0} · {1} freed</value></data>
+  <data name="Welcome.Found" xml:space="preserve"><value>Found {0}, {1}; the source is known for {2}.</value></data>
+  <data name="Welcome.Rules" xml:space="preserve"><value>Nothing is deleted without you. Two rules can do it for you; both are off, and you can change this later in Settings.</value></data>
+  <data name="Welcome.Open" xml:space="preserve"><value>Open the inbox</value></data>
+  <data name="Rules.Expired" xml:space="preserve"><value>Lifetime over → Recycle Bin</value></data>
+  <data name="Rules.Expired.Note" xml:space="preserve"><value>Only files you gave a lifetime yourself. More than the limit at once, or bigger than the size limit: they wait in the inbox.</value></data>
+  <data name="Rules.Duplicates" xml:space="preserve"><value>Exact copies → Recycle Bin</value></data>
+  <data name="Rules.Duplicates.Note" xml:space="preserve"><value>Only copies named like "file (1).pdf" or "file - Copy.pdf" with exactly the same contents as the original. The original always stays.</value></data>
+  <data name="Confirm.Title" xml:space="preserve"><value>Let go of the suggested files?</value></data>
+  <data name="Confirm.Text" xml:space="preserve"><value>{0}, {1} go to the Recycle Bin. You can still undo for 8 seconds, and restore them from the Recycle Bin later.</value></data>
+  <data name="Confirm.More" xml:space="preserve"><value>…and {0} more</value></data>
+  <data name="Confirm.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Files.Search" xml:space="preserve"><value>Search by name, site or URL</value></data>
+  <data name="Files.Group" xml:space="preserve"><value>Group by site</value></data>
+  <data name="Files.Installers" xml:space="preserve"><value>Installers</value></data>
+  <data name="Files.Archives" xml:space="preserve"><value>Archives</value></data>
+  <data name="Files.Duplicates" xml:space="preserve"><value>Duplicates</value></data>
+  <data name="Files.NoSource" xml:space="preserve"><value>No source</value></data>
+  <data name="Files.Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Files.Site" xml:space="preserve"><value>Site</value></data>
+  <data name="Files.Size" xml:space="preserve"><value>Size</value></data>
+  <data name="Files.Date" xml:space="preserve"><value>Downloaded</value></data>
+  <data name="Files.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Files.Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Files.Referrer" xml:space="preserve"><value>Page (ReferrerUrl)</value></data>
+  <data name="Files.Url" xml:space="preserve"><value>File address (HostUrl)</value></data>
+  <data name="Files.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Files.Zone" xml:space="preserve"><value>Zone</value></data>
+  <data name="Files.OpenFolder" xml:space="preserve"><value>Show in folder</value></data>
+  <data name="Journal.Subtitle" xml:space="preserve"><value>Every let go, move, lifetime and keep: by you or by a rule. Nothing is deleted permanently.</value></data>
+  <data name="Journal.RulesOnly" xml:space="preserve"><value>Rules only</value></data>
+  <data name="Journal.Bin" xml:space="preserve"><value>Open the Recycle Bin</value></data>
+  <data name="Journal.Time" xml:space="preserve"><value>Time</value></data>
+  <data name="Journal.Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Journal.Reason" xml:space="preserve"><value>Why</value></data>
+  <data name="Journal.By" xml:space="preserve"><value>By</value></data>
+  <data name="Journal.Return" xml:space="preserve"><value>Return</value></data>
+  <data name="Journal.ShowInBin" xml:space="preserve"><value>Show in Recycle Bin</value></data>
+  <data name="Journal.Empty" xml:space="preserve"><value>Nothing has happened yet.</value></data>
+  <data name="Journal.ReturnGone" xml:space="preserve"><value>The file is no longer where it was moved to.</value></data>
+  <data name="Op.recycle" xml:space="preserve"><value>To Recycle Bin</value></data>
+  <data name="Op.move" xml:space="preserve"><value>Moved</value></data>
+  <data name="Op.ttl" xml:space="preserve"><value>Lifetime</value></data>
+  <data name="Op.keep" xml:space="preserve"><value>Kept</value></data>
+  <data name="Op.gone" xml:space="preserve"><value>Already gone</value></data>
+  <data name="By.User" xml:space="preserve"><value>You</value></data>
+  <data name="By.Rule" xml:space="preserve"><value>Rule: {0}</value></data>
+  <data name="Rule.expired" xml:space="preserve"><value>lifetime</value></data>
+  <data name="Rule.duplicate" xml:space="preserve"><value>duplicate</value></data>
+  <data name="Reason.duplicate" xml:space="preserve"><value>Duplicate of {0}</value></data>
+  <data name="Reason.installer" xml:space="preserve"><value>Installed: {0}</value></data>
+  <data name="Reason.archive" xml:space="preserve"><value>Extracted to {0}</value></data>
+  <data name="Reason.expired" xml:space="preserve"><value>Lifetime ended</value></data>
+  <data name="Reason.return" xml:space="preserve"><value>Returned</value></data>
+  <data name="Settings.Folder" xml:space="preserve"><value>Downloads Lifecycle</value></data>
+  <data name="Settings.Folder.Watched" xml:space="preserve"><value>Watched folder</value></data>
+  <data name="Settings.Folder.Open" xml:space="preserve"><value>Open</value></data>
+  <data name="Settings.Rules" xml:space="preserve"><value>Auto-rules</value></data>
+  <data name="Settings.Safety" xml:space="preserve"><value>Safety</value></data>
+  <data name="Safety.Grace" xml:space="preserve"><value>Grace period, hours</value></data>
+  <data name="Safety.Grace.Note" xml:space="preserve"><value>The duplicates rule never touches younger files.</value></data>
+  <data name="Safety.MaxSize" xml:space="preserve"><value>Size limit for rules, GB</value></data>
+  <data name="Safety.MaxSize.Note" xml:space="preserve"><value>Bigger files are never let go by a rule, only by you.</value></data>
+  <data name="Safety.Mass" xml:space="preserve"><value>Ask when more lifetimes end at once than</value></data>
+  <data name="Safety.Mass.Note" xml:space="preserve"><value>After a holiday or a switched-off PC, they wait in the inbox for your OK.</value></data>
+  <data name="Settings.Reminder" xml:space="preserve"><value>Reminder</value></data>
+  <data name="Settings.Reminder.Daily" xml:space="preserve"><value>Daily reminder</value></data>
+  <data name="Settings.Reminder.Note" xml:space="preserve"><value>Not shown during a fullscreen game or presentation.</value></data>
+  <data name="Settings.Menu" xml:space="preserve"><value>Explorer</value></data>
+  <data name="Settings.Menu.Switch" xml:space="preserve"><value>"Lifetime" in the right-click menu</value></data>
+  <data name="Settings.Menu.Note" xml:space="preserve"><value>In Windows 11 it is under "Show more options" (Shift+F10).</value></data>
+  <data name="Move.Choose" xml:space="preserve"><value>Choose a folder…</value></data>
+  <data name="Move.Title" xml:space="preserve"><value>Move to</value></data>
+  <data name="Ttl.Days" xml:space="preserve"><value>{0} day|{0} days</value></data>
+  <data name="Ttl.Pick" xml:space="preserve"><value>Until a date…</value></data>
+  <data name="Ttl.Clear" xml:space="preserve"><value>Remove lifetime</value></data>
+  <data name="Ttl.Keep" xml:space="preserve"><value>keep</value></data>
+  <data name="Ttl.Until" xml:space="preserve"><value>until {0}</value></data>
+  <data name="Ttl.Ended" xml:space="preserve"><value>ended</value></data>
+  <data name="Menu.Lifetime" xml:space="preserve"><value>Lifetime</value></data>
+  <data name="Menu.1d" xml:space="preserve"><value>1 day</value></data>
+  <data name="Menu.7d" xml:space="preserve"><value>7 days</value></data>
+  <data name="Menu.30d" xml:space="preserve"><value>30 days</value></data>
+  <data name="Menu.Keep" xml:space="preserve"><value>Keep</value></data>
+  <data name="Menu.Clear" xml:space="preserve"><value>Remove lifetime</value></data>
+  <data name="Tray.Sort" xml:space="preserve"><value>Sort the inbox</value></data>
+  <data name="Tray.Pause" xml:space="preserve"><value>Pause auto-rules</value></data>
+  <data name="Tray.Pause.Hour" xml:space="preserve"><value>For 1 hour</value></data>
+  <data name="Tray.Pause.Restart" xml:space="preserve"><value>Until restart</value></data>
+  <data name="Tray.Pause.Resume" xml:space="preserve"><value>Resume</value></data>
+  <data name="Tray.OpenFolder" xml:space="preserve"><value>Open Downloads</value></data>
+  <data name="Tray.Tooltip" xml:space="preserve"><value>Inbox: {0} · to clean {1}</value></data>
+  <data name="Notify.Auto" xml:space="preserve"><value>Rules put {0} ({1}) into the Recycle Bin.</value></data>
+  <data name="Notify.Ttl" xml:space="preserve"><value>Lifetime {0}: {1}.</value></data>
+  <data name="Notify.TtlOutside" xml:space="preserve"><value>Skipped {0} outside Downloads: lifetime works only there.</value></data>
+  <data name="Notify.Reminder" xml:space="preserve"><value>Inbox: {0}, {1} to clean.</value></data>
+  <data name="Unit.B" xml:space="preserve"><value>B</value></data>
+  <data name="Unit.KB" xml:space="preserve"><value>KB</value></data>
+  <data name="Unit.MB" xml:space="preserve"><value>MB</value></data>
+  <data name="Unit.GB" xml:space="preserve"><value>GB</value></data>
+  <data name="Unit.TB" xml:space="preserve"><value>TB</value></data>
+  <data name="N.Files" xml:space="preserve"><value>{0} file|{0} files</value></data>
+  <data name="Ago.Now" xml:space="preserve"><value>just now</value></data>
+  <data name="Ago.Minutes" xml:space="preserve"><value>{0} min ago</value></data>
+  <data name="Ago.Hours" xml:space="preserve"><value>{0} h ago</value></data>
+  <data name="Ago.Days" xml:space="preserve"><value>{0} day ago|{0} days ago</value></data>
+  <data name="In.Minutes" xml:space="preserve"><value>in {0} min</value></data>
+  <data name="In.Hours" xml:space="preserve"><value>in {0} h</value></data>
+  <data name="In.Days" xml:space="preserve"><value>in {0} day|in {0} days</value></data>
+  <data name="Badge.Installer.exact" xml:space="preserve"><value>Installed: {0} (exact)</value></data>
+  <data name="Badge.Installer.likely" xml:space="preserve"><value>Probably installed: {0} ({1})</value></data>
+  <data name="Badge.Installer.other" xml:space="preserve"><value>Another version installed: {0}</value></data>
+  <data name="Why.name" xml:space="preserve"><value>the name matches</value></data>
+  <data name="Why.version" xml:space="preserve"><value>the version and publisher match</value></data>
+  <data name="Why.msi" xml:space="preserve"><value>Windows Installer</value></data>
+  <data name="Badge.Archive" xml:space="preserve"><value>Extracted to {0} ({1}%)</value></data>
+  <data name="Badge.ArchiveHere" xml:space="preserve"><value>Extracted right here ({0}%)</value></data>
+  <data name="Badge.Duplicate" xml:space="preserve"><value>Duplicate of {0}</value></data>
+  <data name="Badge.Expired" xml:space="preserve"><value>Lifetime ended</value></data>
+  <data name="Badge.Expires" xml:space="preserve"><value>Lifetime ends {0}</value></data>
+  <data name="Site.Unknown" xml:space="preserve"><value>unknown</value></data>
+  <data name="Kind.Other" xml:space="preserve"><value>File</value></data>
+  <data name="Kind.Installer" xml:space="preserve"><value>Program</value></data>
+  <data name="Kind.Archive" xml:space="preserve"><value>Archive</value></data>
+  <data name="Kind.Folder" xml:space="preserve"><value>Folder</value></data>
+  <data name="Zone.Internet" xml:space="preserve"><value>Internet</value></data>
+  <data name="Zone.Restricted" xml:space="preserve"><value>Restricted</value></data>
+  <data name="Zone.Intranet" xml:space="preserve"><value>Local network</value></data>
+  <data name="Zone.Trusted" xml:space="preserve"><value>Trusted</value></data>
+  <data name="Zone.Local" xml:space="preserve"><value>This computer</value></data>
+  <data name="Status.Kept" xml:space="preserve"><value>Kept</value></data>
+  <data name="Status.Until" xml:space="preserve"><value>Until {0}</value></data>
+  <data name="Status.Suggested" xml:space="preserve"><value>Suggested</value></data>
+  <data name="Verdict.Ok" xml:space="preserve"><value>done</value></data>
+  <data name="Verdict.Gone" xml:space="preserve"><value>already gone</value></data>
+  <data name="Verdict.Outside" xml:space="preserve"><value>not in the watched folder</value></data>
+  <data name="Verdict.Changed" xml:space="preserve"><value>the file changed, it will be checked again</value></data>
+  <data name="Verdict.Kept" xml:space="preserve"><value>kept</value></data>
+  <data name="Verdict.NotFixed" xml:space="preserve"><value>not on a fixed drive: the Recycle Bin may not take it, delete it yourself</value></data>
+  <data name="Verdict.LongPath" xml:space="preserve"><value>the path is too long, delete it yourself</value></data>
+  <data name="Verdict.InUse" xml:space="preserve"><value>open in another program</value></data>
+  <data name="Verdict.TooYoung" xml:space="preserve"><value>younger than the grace period</value></data>
+  <data name="Verdict.TooBig" xml:space="preserve"><value>bigger than the size limit</value></data>
 </root>
