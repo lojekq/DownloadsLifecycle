@@ -31,7 +31,7 @@ public static class Folder
     internal static string Resolve(IReadOnlyList<string> unknown)
     {
         if (Args.Current.Demo) return @"C:\Users\demo\Downloads"; // shown in screenshots: never a real user name
-#if DEBUG
+#if DEBUG || SANDBOX // SANDBOX: Release single-file for installer tests (-p:Sandbox=true)
         var i = unknown.ToList().IndexOf("--watch-dir");
         var dir = i >= 0 && i + 1 < unknown.Count ? System.IO.Path.GetFullPath(unknown[i + 1]) : Sandbox;
         Directory.CreateDirectory(dir);
