@@ -42,3 +42,16 @@ CoTaskMemFree
 WINEVENT_OUTOFCONTEXT
 WINEVENT_SKIPOWNPROCESS
 UNICODE_STRING
+// Downloads Lifecycle: file identity, Recycle Bin, msi.dll
+CreateFile
+GetFileInformationByHandleEx
+FILE_ID_INFO
+FILE_INFO_BY_HANDLE_CLASS
+MsiOpenDatabase
+MsiDatabaseOpenView
+MsiViewExecute
+MsiViewFetch
+MsiRecordGetString
+MsiCloseHandle
+MsiQueryProductState
+MsiEnumRelatedProducts
