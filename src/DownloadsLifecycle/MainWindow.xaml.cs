@@ -31,7 +31,7 @@ public partial class MainWindow
     /// <summary>By TargetPageTag: "inbox", "files", "journal", "settings", "about"; "rules" = Settings at the app's section.</summary>
     public void Navigate(string page)
     {
-        if (page == "rules") (RulesSettings.ScrollIntoView, page) = (true, "settings"); // Settings, scrolled to the app's section
+        if (page is "rules" or "safety") (RulesSettings.ScrollTo, page) = (page, "settings"); // Settings, scrolled to the app's section
         Nav.Navigate(page);
     }
 

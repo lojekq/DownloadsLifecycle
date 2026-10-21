@@ -139,7 +139,7 @@ namespace DownloadsLifecycle.Features
             { Type: "duplicate" } s => $"duplicate|{s.Subject}",
             { Type: "installer" } s => $"installer|{s.Subject} {s.Version}".TrimEnd(),
             { Type: "archive" } s => $"archive|{s.Subject}",
-            { Type: "site" } s => $"site|{s.Subject}",
+            { Type: "site" or "rule" } s => $"site|{s.Subject}",
             _ when Expired(i, nowUtc) => "expired",
             _ => "",
         };

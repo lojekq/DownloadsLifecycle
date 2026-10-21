@@ -16,8 +16,8 @@ namespace DownloadsLifecycle.Features;
 /// </summary>
 public partial class RulesSettings
 {
-    /// <summary>Page id "rules": Settings scrolled to this section (screenshots, the tray).</summary>
-    public static bool ScrollIntoView { get; set; }
+    /// <summary>Page ids "rules" (folders and site rules) and "safety" (auto-rules and limits): Settings scrolled there (screenshots, the tray).</summary>
+    public static string? ScrollTo { get; set; }
 
     static Settings S => Settings.Current;
     static string Telegram => Path.Combine(Folder.Path, "Telegram Desktop");
@@ -27,9 +27,23 @@ public partial class RulesSettings
         InitializeComponent();
         Loaded += (_, _) =>
         {
-            if (!ScrollIntoView) return;
-            ScrollIntoView = false;
-            Dispatcher.BeginInvoke(() => BringIntoView(new Rect(0, 0, ActualWidth, ActualHeight * 0.3)), System.Windows.Threading.DispatcherPriority.Loaded);
+            if (ScrollTo is not { } target) return;
+            ScrollTo = null;
+            FrameworkElement head = target == "safety" ? AutoHead : FolderHead;
+            var tries = 0;
+            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+            timer.Tick += (_, _) => // the page's ScrollViewer is measured a few frames after Loaded
+            {
+                for (var p = System.Windows.Media.VisualTreeHelper.GetParent(this); p is not null; p = System.Windows.Media.VisualTreeHelper.GetParent(p))
+                    if (p is ScrollViewer { ScrollableHeight: > 0 } sv)
+                    {
+                        sv.ScrollToVerticalOffset(sv.VerticalOffset + head.TransformToAncestor(sv).Transform(new Point(0, 0)).Y - 8);
+                        timer.Stop();
+                        return;
+                    }
+                if (++tries > 40) timer.Stop();
+            };
+            timer.Start();
         };
         var s = S;
         FolderText.Text = Folder.Path;
@@ -156,13 +170,13 @@ public partial class RulesSettings
 
     FrameworkElement RuleRow(SiteRule r)
     {
-        var domain = new TextBox { Text = r.Domain, PlaceholderText = Loc.T("SiteRules.Domain"), Width = 180, Margin = new Thickness(0, 0, 8, 6) };
-        var exts = new TextBox { Text = r.Extensions, PlaceholderText = Loc.T("SiteRules.Extensions"), Width = 140, Margin = new Thickness(0, 0, 8, 6) };
-        var action = new ComboBox { Width = 190, Margin = new Thickness(0, 0, 8, 6) };
+        var domain = new TextBox { Text = r.Domain, PlaceholderText = Loc.T("SiteRules.Domain"), Width = 220, Margin = new Thickness(0, 0, 8, 6) };
+        var exts = new TextBox { Text = r.Extensions, PlaceholderText = Loc.T("SiteRules.Extensions"), Width = 180, Margin = new Thickness(0, 0, 8, 6) };
+        var action = new ComboBox { Width = 240, Margin = new Thickness(0, 0, 8, 6) };
         foreach (var a in new[] { "ttl", "move", "clean" }) action.Items.Add(new ComboBoxItem { Tag = a, Content = Loc.T("SiteRules.Action." + a) });
         action.SelectedItem = action.Items.Cast<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == r.Action) ?? action.Items[0];
-        var days = new NumberBox { Value = r.Days, Minimum = 1, Maximum = 3650, MaxDecimalPlaces = 0, Width = 110, ClearButtonEnabled = false, Margin = new Thickness(0, 0, 8, 6) };
-        var folder = new Button { Content = r.Folder ?? Loc.T("SiteRules.Folder"), Margin = new Thickness(0, 0, 8, 6), MaxWidth = 260 };
+        var days = new NumberBox { Value = r.Days, Minimum = 1, Maximum = 3650, MaxDecimalPlaces = 0, Width = 160, ClearButtonEnabled = false, Margin = new Thickness(0, 0, 8, 6) };
+        var folder = new Button { Content = r.Folder ?? Loc.T("SiteRules.Folder"), Margin = new Thickness(0, 0, 8, 6), MaxWidth = 320 };
         var auto = new ToggleSwitch { IsChecked = r.Auto, Content = Loc.T("SiteRules.Auto"), Margin = new Thickness(0, 0, 8, 6) };
         var remove = new Button { Icon = new SymbolIcon(SymbolRegular.Delete24), ToolTip = Loc.T("SiteRules.Remove"), Margin = new Thickness(0, 0, 0, 6) };
         foreach (var (c, name) in new (FrameworkElement, string)[] { (domain, "SiteRules.Domain"), (exts, "SiteRules.Extensions"), (action, "SiteRules.Title"),
@@ -192,11 +206,17 @@ public partial class RulesSettings
         };
         remove.Click += (_, _) => { S.SiteRules.Remove(r); RuleSaved(); RulesList(); };
 
-        var row = new WrapPanel();
-        foreach (var c in new FrameworkElement[] { domain, exts, action, days, folder, auto, remove })
+        // two lines: what matches / what happens
+        var row = new StackPanel();
+        foreach (var line in new[] { new FrameworkElement[] { domain, exts, action }, [days, folder, auto, remove] })
         {
-            c.VerticalAlignment = VerticalAlignment.Center;
-            row.Children.Add(c);
+            var panel = new WrapPanel();
+            foreach (var c in line)
+            {
+                c.VerticalAlignment = VerticalAlignment.Center;
+                panel.Children.Add(c);
+            }
+            row.Children.Add(panel);
         }
         return new Card { Content = row, Margin = new Thickness(0, 0, 0, 4), Padding = new Thickness(12, 10, 12, 4) };
     }

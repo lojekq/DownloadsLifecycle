@@ -16,7 +16,7 @@
         </Style>
     </UserControl.Resources>
     <StackPanel>
-        <ui:TextBlock Text="{l:T Settings.Folder}" Style="{StaticResource Head}" Margin="0,0,0,8" />
+        <ui:TextBlock x:Name="FolderHead" Text="{l:T Settings.Folder}" Style="{StaticResource Head}" Margin="0,0,0,8" />
         <ui:CardControl Icon="{ui:SymbolIcon Folder24}" Margin="0,0,0,4">
             <ui:CardControl.Header>
                 <StackPanel>
@@ -39,7 +39,7 @@
         <ItemsControl x:Name="RuleList" />
         <ui:Button Content="{l:T SiteRules.Add}" Icon="{ui:SymbolIcon Add24}" Click="AddRule" Margin="0,4,0,0" />
 
-        <ui:TextBlock Text="{l:T Settings.Rules}" Style="{StaticResource Head}" />
+        <ui:TextBlock x:Name="AutoHead" Text="{l:T Settings.Rules}" Style="{StaticResource Head}" />
         <ui:CardControl Icon="{ui:SymbolIcon CalendarClock24}" Margin="0,0,0,4">
             <ui:CardControl.Header>
                 <StackPanel>

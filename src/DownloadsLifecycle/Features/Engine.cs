@@ -59,6 +59,7 @@ public static class Engine
         {
             uninstall = UninstallEntries.List();
             Watch(Folder.All);
+            if (FirstRun) index.LastTriageUtc = DateTime.UtcNow; // what the first scan found is not "new"
         });
     }
 

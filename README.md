@@ -29,9 +29,12 @@ Nothing is ever deleted for good: every file goes to the Recycle Bin, and every 
 
 - **Every file shows the site it came from** — search and group by site, with the full page and file address one click away.
 - **Leftovers are spotted for you** — installers of programs you already have, archives you already extracted, `file (1).pdf` duplicates.
-- **Lifetime** — right-click → "Lifetime → 7 days", and the file goes to the Recycle Bin when its time is up.
+- **Lifetime** — right-click → "Lifetime → 7 days": the file goes to the Recycle Bin when its time is up.
+- **Site rules** — "github.com + exe, msi → move to D:\Installers", "huggingface.co → 30 days": automatic, or one Apply click in the inbox.
+- **More than zip** — .7z, .rar and .tar.* archives are checked too; Telegram Desktop or any other folder can be watched like Downloads.
+- **Restore and "Where is it from?"** — the journal brings files back from the Recycle Bin; right-click any file to see its site and addresses.
 - **One daily screen** — new downloads and suggestions in one place: Keep, Move, Let go or Lifetime, with keys K / M / Del / T.
-- **Safe by design** — Recycle Bin only, 8 s to undo, every action logged, both auto-rules are off until you turn them on.
+- **Safe by design** — Recycle Bin only, 8 s to undo, every action logged, every auto-rule is off until you turn it on.
 - **100 % local** — no admin rights, no telemetry, no browser history reading.
 
 ## See it in action
@@ -44,13 +47,15 @@ Nothing is ever deleted for good: every file goes to the Recycle Bin, and every 
 |---|---|---|
 | All files, grouped by site | ![All files, light](docs/files-light-en.png) | ![All files, dark](docs/files-dark-en.png) |
 | Journal | ![Journal, light](docs/journal-light-en.png) | ![Journal, dark](docs/journal-dark-en.png) |
-| Rules and safety | ![Rules, light](docs/rules-light-en.png) | ![Rules, dark](docs/rules-dark-en.png) |
+| Folders and site rules | ![Rules, light](docs/rules-light-en.png) | ![Rules, dark](docs/rules-dark-en.png) |
+| Auto-rules and safety | ![Safety, light](docs/safety-light-en.png) | ![Safety, dark](docs/safety-dark-en.png) |
 
 ## How it works
 
 When a browser saves a file, Windows attaches a hidden Mark-of-the-Web stream (`Zone.Identifier`) with the page and file address.
 Downloads Lifecycle only reads it, once, when the file appears, so the source survives "Unblock". Installers are matched against the list of installed programs
-(an `.msi` exactly by its ProductCode), `.zip` archives against the files next to them, duplicates by SHA-256. All of it happens on your PC.
+(an `.msi` exactly by its ProductCode), archives (`.zip`, `.7z`, `.rar`, `.tar.*`, only their lists of files) against the files next to them,
+duplicates by SHA-256. All of it happens on your PC.
 
 ## Download
 
@@ -63,7 +68,7 @@ Requirements: Windows 11 x64. Windows 10 22H2 should work but is not tested.
 ## First run
 
 Put the exe into `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` first: from there it adds the right-click menu and the Start menu shortcut by itself.
-On the first start Windows may show a SmartScreen warning (see FAQ). The first screen shows how many files are there and offers the two auto-rules, both off.
+On the first start Windows may show a SmartScreen warning (see FAQ). The first screen shows how many files are there and offers the two simplest auto-rules, both off.
 The app then lives in the tray; turn on **Start with Windows** in Settings to get the daily reminder.
 
 ## Settings
@@ -72,6 +77,11 @@ The app then lives in the tray; turn on **Start with Windows** in Settings to ge
 |---|---|---|
 | Lifetime over → Recycle Bin | off | Files whose lifetime you set yourself go to the Recycle Bin when it ends |
 | Exact copies → Recycle Bin | off | Only `file (1).pdf` / `file - Copy.pdf` with the same contents as the original; the original stays |
+| Installed MSI → Recycle Bin | off | Only `.msi` files whose ProductCode Windows reports as installed; never `.exe` |
+| Extracted archives → Recycle Bin | off | Only when every file of the archive is next to it with the same size; checked again right before |
+| Wait before the two rules above | 3 days | Counted from the moment the match was found |
+| Site rules | none | Site (with subdomains) + extensions → lifetime, move to a folder, or offer for cleanup; automatic or with Apply |
+| Extra folders | none | Watched like Downloads, e.g. `Downloads\Telegram Desktop` |
 | Grace period | 24 h | The duplicates rule never touches younger files |
 | Size limit for rules | 4 GB | Bigger files are never let go by a rule, only by you |
 | Ask when more lifetimes end at once than | 20 | After a holiday they wait in the inbox for your OK |
@@ -88,6 +98,8 @@ Settings, the index (`state.json`) and the journal (`journal.jsonl`) live in `%A
 - An `.exe` that matches no installed program is never offered: it may be a portable app.
 - Moving to another drive copies, verifies and only then sends the original to the Recycle Bin; moves can be returned from the journal.
 - Rules wait 10 minutes after start, can be paused from the tray, and skip files bigger than the limit.
+- Installers and archives are let go by a rule only on an exact match (MSI by ProductCode, archive at 100 %), days after it was found, and checked again right before.
+- If Windows Storage Sense also clears Downloads, Settings warns you: those files skip the Recycle Bin and the journal.
 
 ## FAQ
 
@@ -114,6 +126,11 @@ is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\`; otherwise turn it on in Set
 
 The site is known only if the browser wrote Mark-of-the-Web: private/incognito windows, Telegram, files copied from a USB stick or
 a non-NTFS drive, and files unblocked before the app first saw them have none. Everything else still works for them.
+</details>
+
+<details><summary>A file went to the Recycle Bin by mistake</summary>
+
+Journal → **Restore**: it goes back to where it was (if that place is free). Moves have **Return**.
 </details>
 
 <details><summary>How do I uninstall?</summary>
