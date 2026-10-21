@@ -44,6 +44,8 @@ public partial class InboxPage
             ? string.Format(Loc.T("Inbox.Summary"), Fmt.Files(toClean.Count), Fmt.Size(toClean.Sum(i => i.Size)))
             : Loc.T("Inbox.NothingToClean");
         AcceptButton.IsEnabled = toClean.Count > 0;
+        var (freedCount, freedBytes) = Rules.FreedThisMonth(Index.ReadJournal(), DateTime.Now);
+        FreedText.Text = freedCount > 0 ? string.Format(Loc.T("Inbox.Freed"), Fmt.Size(freedBytes), Fmt.Files(freedCount)) : "";
         SeenButton.Visibility = rows.Any(r => r.Item.FirstSeenUtc > s.LastTriageUtc && r.Item.TtlUtc is null && r.Item.Suggestion is null)
             ? Visibility.Visible : Visibility.Collapsed;
 
@@ -64,6 +66,7 @@ public partial class InboxPage
 
     List<Item> Selection => List.SelectedItems.Cast<Row>().Select(r => r.Item).ToList();
 
+    void ApplyClick(object sender, RoutedEventArgs e) { foreach (var i in Targets(sender).Where(i => i.Suggestion?.Type == "rule")) Actions.ApplyRule(i); }
     void KeepClick(object sender, RoutedEventArgs e) => Menus.Keep(Targets(sender));
     void MoveClick(object sender, RoutedEventArgs e) => Menus.Show(Menus.Move(Targets(sender)), (UIElement)sender);
     void TtlClick(object sender, RoutedEventArgs e) => Menus.Show(Menus.Lifetime(Targets(sender), (UIElement)sender), (UIElement)sender);

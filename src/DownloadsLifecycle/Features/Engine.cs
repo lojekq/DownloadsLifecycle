@@ -16,12 +16,11 @@ public static class Engine
     static readonly CancellationTokenSource Stopping = new();
     static readonly Dictionary<string, string> Checked = [];   // key → stamp/generation of the last installer or zip check
     static Index index = new();
-    static Scanner? scanner;
+    static readonly List<(Scanner Scan, FileSystemWatcher Watch)> Folders = [];   // one per watched folder, worker only
     static IReadOnlyList<UninstallEntry> uninstall = [];
     static int generation;
     static DateTime saveDue = DateTime.MaxValue, detectDue = DateTime.MaxValue, nextTick;
     static Thread? thread;
-    static FileSystemWatcher? watcher;
     static Dispatcher? ui;
 
     /// <summary>Latest snapshot, replaced on the UI thread right before <see cref="Changed"/>.</summary>
@@ -52,7 +51,6 @@ public static class Engine
         index = Index.From(saved ?? new([], DateTime.UtcNow)); // first run: what is already there is not "new"
         index.Dirty = FirstRun;
         Current = index.Snapshot();
-        scanner = new Scanner(index, Folder.Path);
         Index.RotateJournal(DateTime.UtcNow);
 
         thread = new Thread(Loop) { IsBackground = true, Priority = ThreadPriority.BelowNormal, Name = "worker" };
@@ -60,28 +58,56 @@ public static class Engine
         Post(() =>
         {
             uninstall = UninstallEntries.List();
-            scanner.Reconcile();
-            watcher = new FileSystemWatcher(Folder.Path)
-            {
-                IncludeSubdirectories = false,
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
-                InternalBufferSize = 64 * 1024,
-            };
-            watcher.Created += (_, e) => Touch(e.FullPath);
-            watcher.Changed += (_, e) => Touch(e.FullPath);
-            watcher.Deleted += (_, e) => Touch(e.FullPath);
-            watcher.Renamed += (_, e) => { Touch(e.OldFullPath); Touch(e.FullPath); };
-            watcher.Error += (_, e) => { Log.Warn("watcher buffer overflow, full rescan", e.GetException()); Post(scanner.Reconcile); };
-            watcher.EnableRaisingEvents = true;
-            Log.Info($"watching, {index.Items.Count} item(s)");
+            Watch(Folder.All);
         });
+    }
+
+    /// <summary>Settings changed the extra folders: watch the new list; items of dropped folders leave the index (and their lifetimes with them).</summary>
+    public static void Refolder()
+    {
+        var all = Folder.All;
+        Post(() =>
+        {
+            foreach (var gone in index.Items.Values.Where(i => !all.Any(f => Scanner.IsTopLevel(f, i.Path))).Select(i => i.Key).ToList()) index.Remove(gone);
+            Watch(all);
+        });
+    }
+
+    static void Watch(IReadOnlyList<string> folders)
+    {
+        foreach (var (_, w) in Folders) w.Dispose();
+        Folders.Clear();
+        foreach (var dir in folders)
+        {
+            try
+            {
+                var scan = new Scanner(index, dir);
+                scan.Reconcile();
+                var w = new FileSystemWatcher(dir)
+                {
+                    IncludeSubdirectories = false,
+                    NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.Size | NotifyFilters.LastWrite,
+                    InternalBufferSize = 64 * 1024,
+                };
+                void Touch(string path) => Post(() => scan.Touch(path, DateTime.UtcNow));
+                w.Created += (_, e) => Touch(e.FullPath);
+                w.Changed += (_, e) => Touch(e.FullPath);
+                w.Deleted += (_, e) => Touch(e.FullPath);
+                w.Renamed += (_, e) => { Touch(e.OldFullPath); Touch(e.FullPath); };
+                w.Error += (_, e) => { Log.Warn("watcher buffer overflow, full rescan", e.GetException()); Post(scan.Reconcile); };
+                w.EnableRaisingEvents = true;
+                Folders.Add((scan, w));
+            }
+            catch (Exception e) when (e is IOException or UnauthorizedAccessException or ArgumentException) { Log.Warn("folder not watched: " + Fmt.Err(e)); }
+        }
+        Log.Info($"watching {Folders.Count} folder(s), {index.Items.Count} item(s)");
     }
 
     /// <summary>Stop the watcher, cancel hashing, wait for the worker up to 5 s, write state.json.</summary>
     public static void Stop()
     {
         if (thread is null) return;
-        watcher?.Dispose();
+        foreach (var (_, w) in Folders.ToList()) w.Dispose();
         Stopping.Cancel();
         Jobs.CompleteAdding();
         var joined = thread.Join(TimeSpan.FromSeconds(5));
@@ -104,8 +130,6 @@ public static class Engine
         return t.Task;
     }
 
-    static void Touch(string path) => Post(() => scanner!.Touch(path, DateTime.UtcNow));
-
     static void Loop()
     {
         nextTick = DateTime.UtcNow.AddSeconds(30);
@@ -115,7 +139,7 @@ public static class Engine
             {
                 if (Jobs.TryTake(out var job, 1000, Stopping.Token)) job();
                 var now = DateTime.UtcNow;
-                scanner?.ProcessPending(now);
+                foreach (var (scan, _) in Folders) scan.ProcessPending(now);
                 if (index.Dirty) Changed_();
                 if (now >= detectDue) { detectDue = DateTime.MaxValue; Detect(); if (index.Dirty) Changed_(); }
                 if (now >= nextTick) { nextTick = now.AddMinutes(15); Tick(now); if (index.Dirty) Changed_(); }
@@ -147,37 +171,62 @@ public static class Engine
     /// <summary>Duplicates first (a hash is proof), then installers, then extracted zips. Installer and zip checks are cached per tick.</summary>
     static void Detect()
     {
+        var now = DateTime.UtcNow;
         var dups = Duplicates.Find(index, Stopping.Token);
+        var rules = Settings.Current.SiteRules.ToList();
+        var moves = new List<(Item Item, string Folder)>();
         foreach (var i in index.Items.Values.ToList())
         {
             var s = i.Kept ? null : dups.GetValueOrDefault(i.Key);
-            var zip = Path.GetExtension(i.Path).Equals(".zip", StringComparison.OrdinalIgnoreCase);
-            if (s is null && !i.Kept && !i.IsDir && (i.Kind == Kind.Installer || zip))
+            var archive = Archives.Supported(i.Path);
+            if (s is null && !i.Kept && !i.IsDir && (i.Kind == Kind.Installer || archive))
             {
-                // a zip is looked at again when the folder it was extracted to changes, or at the 15 min tick for deeper changes
-                var folder = zip ? index.ByPath(Path.Combine(Path.GetDirectoryName(i.Path)!, Path.GetFileNameWithoutExtension(i.Path)))?.Stamp : null;
+                // an archive is looked at again when the folder it was extracted to changes, or at the 15 min tick for deeper changes
+                var folder = archive ? index.ByPath(Path.Combine(Path.GetDirectoryName(i.Path)!, Archives.Stem(i.Path)))?.Stamp : null;
                 var mark = $"{i.Stamp}/{generation}/{folder}";
-                if (Checked.GetValueOrDefault(i.Key) == mark) s = i.Suggestion is { Type: not "duplicate" } ? i.Suggestion : null;
+                if (Checked.GetValueOrDefault(i.Key) == mark) s = i.Suggestion is { Type: "installer" or "archive" } ? i.Suggestion : null;
                 else
                 {
                     Stopping.Token.ThrowIfCancellationRequested();
-                    s = zip ? Archive(i) : Installers.Check(i, uninstall);
+                    s = archive ? Archive(i) : Installers.Check(i, uninstall);
                     Checked[i.Key] = mark;
                 }
             }
-            if (s != i.Suggestion) index.Set(i with { Suggestion = s });
+            var item = i;
+            if (s is null && !i.Kept && !i.Ruled && SiteRule.First(rules, i) is { } r) // v1.0 site rules: only where no detector spoke
+            {
+                if (r.Action == "clean") s = new("site", "likely", r.Domain);
+                else if (!r.Auto)
+                {
+                    if (r.Action == "move" || i.TtlUtc is null)
+                        s = new("rule", "exact", r.Domain, Why: r.Action, Arg: r.Action == "move" ? r.Folder : r.Days.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                }
+                else if (r.Action == "ttl")
+                {
+                    item = i with { TtlUtc = i.TtlUtc ?? i.FirstSeenUtc + r.Days * Folder.Day, Ruled = true }; // a lifetime only deletes through its own rule
+                    if (i.TtlUtc is null) Index.Append(new(now, "ttl", i.Path, i.Size, $"{r.Days}d", "rule:site"));
+                }
+                else if (r.Folder is { } dir) moves.Add((i, dir));
+            }
+            if (s is not null && i.Suggestion is { } old && s.Same(old)) s = old; // keeps the time it was first found
+            else if (s is not null) s = s with { FoundUtc = now };
+            item = item with { Suggestion = s };
+            if (item != i) index.Set(item);
         }
+        // under --ttl-minutes (Debug sandbox) the start delay is 10 s, like a day is a minute
+        if (moves.Count > 0 && !Paused && now - StartedUtc >= (Folder.TtlMinutes ? TimeSpan.FromSeconds(10) : Rules.StartDelay))
+            ui?.BeginInvoke(() => Actions.RunRuleMoves(moves));
     }
 
     static Suggestion? Archive(Item i) =>
-        ZipCoverage.Check(i.Path) is { Percent: >= ZipCoverage.Threshold } c ? new("archive", c.Percent == 100 ? "exact" : "likely", c.Where, Percent: c.Percent) : null;
+        Archives.Check(i.Path) is { Percent: >= Archives.Threshold } c ? new("archive", c.Percent == 100 ? "exact" : "likely", c.Where, Percent: c.Percent) : null;
 
     /// <summary>Every 15 min (by the UTC clock, so sleep doesn't break lifetimes): fresh Uninstall list, folder sizes, detectors, rules, reminder.</summary>
     static void Tick(DateTime now)
     {
         generation++;
         uninstall = UninstallEntries.List();
-        scanner?.RefreshFolderSizes();
+        foreach (var (scan, _) in Folders) scan.RefreshFolderSizes();
         Detect();
         var s = index.Snapshot();
         var plan = Rules.AutoPlan(s.Items, now, StartedUtc, Paused, Settings.Current);
@@ -194,6 +243,16 @@ public static class Engine
     {
         if (Args.Current.Demo) ShowDemo(Current with { LastTriageUtc = DateTime.UtcNow });
         else Post(() => { index.LastTriageUtc = DateTime.UtcNow; index.Dirty = true; });
+    }
+
+    /// <summary>Site rules changed: look at everything again soon.</summary>
+    public static void Redetect() => Post(() => detectDue = DateTime.UtcNow);
+
+    /// <summary>A site rule was applied by hand or can't be (its folder is gone): never offered again for this file.</summary>
+    public static void MarkRuled(string key)
+    {
+        if (Args.Current.Demo) { ShowDemo(Current with { Items = [.. Current.Items.Select(i => i.Key == key ? i with { Ruled = true, Suggestion = null } : i)] }); return; }
+        Post(() => { if (index.Items.GetValueOrDefault(key) is { } i) index.Set(i with { Ruled = true, Suggestion = i.Suggestion is { Type: "rule" } ? null : i.Suggestion }); });
     }
 
     /// <summary>After a recycle or move: forget at once instead of waiting for the watcher.</summary>
@@ -217,7 +276,8 @@ public static class Engine
         int done = 0, outside = 0;
         foreach (var p in paths)
         {
-            if (scanner?.Upsert(p, force: true) is { } key && index.Items.GetValueOrDefault(key) is { } i) { Apply(i, cmd); done++; }
+            var scan = Folders.Select(f => f.Scan).FirstOrDefault(f => Scanner.IsTopLevel(f.Folder, p));
+            if (scan?.Upsert(p, force: true) is { } key && index.Items.GetValueOrDefault(key) is { } i) { Apply(i, cmd); done++; }
             else outside++;
         }
         return (done, outside);

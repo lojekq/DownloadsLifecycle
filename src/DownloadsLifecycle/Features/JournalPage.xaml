@@ -53,8 +53,11 @@
                             <Grid>
                                 <ui:Button Content="{l:T Journal.Return}" Padding="8,2" Click="ReturnClick"
                                            Visibility="{Binding CanReturn, Converter={StaticResource Vis}}" />
-                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}" AutomationProperties.Name="{l:T Journal.ShowInBin}"
-                                           Visibility="{Binding InBin, Converter={StaticResource Vis}}" />
+                                <StackPanel Orientation="Horizontal" Visibility="{Binding InBin, Converter={StaticResource Vis}}">
+                                    <ui:Button Content="{l:T Journal.Restore}" Padding="8,2" Margin="0,0,4,0" Click="RestoreClick" />
+                                    <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}" AutomationProperties.Name="{l:T Journal.ShowInBin}"
+                                           />
+                                </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

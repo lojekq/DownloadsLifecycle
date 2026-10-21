@@ -31,6 +31,7 @@
   <ItemGroup>
     <PackageReference Include="WPF-UI" Version="4.3.0" />
     <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1" />
+    <PackageReference Include="SharpCompress" Version="0.50.4" />  <!-- v1.0: 7z / rar / tar.* entry lists; newest at least 2 weeks old on 2026-10-21 -->
     <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.358" PrivateAssets="all" />
   </ItemGroup>
 

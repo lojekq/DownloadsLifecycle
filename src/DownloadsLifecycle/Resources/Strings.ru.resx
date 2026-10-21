@@ -200,4 +200,52 @@
   <data name="Verdict.InUse" xml:space="preserve"><value>открыт в другой программе</value></data>
   <data name="Verdict.TooYoung" xml:space="preserve"><value>моложе защитного срока</value></data>
   <data name="Verdict.TooBig" xml:space="preserve"><value>больше лимита размера</value></data>
+  <data name="Folder.Bad" xml:space="preserve"><value>Эту папку нельзя отслеживать: не корень диска, не папка, внутри которой «Загрузки», и не Windows.</value></data>
+  <data name="Folder.DebugOnlyDemo" xml:space="preserve"><value>Debug-сборка отслеживает только папки внутри C:\Demo.</value></data>
+  <data name="Folders.Add" xml:space="preserve"><value>Добавить папку…</value></data>
+  <data name="Folders.Telegram" xml:space="preserve"><value>Добавить загрузки Telegram Desktop</value></data>
+  <data name="Folders.Remove" xml:space="preserve"><value>Не отслеживать</value></data>
+  <data name="Files.Folder" xml:space="preserve"><value>Папка</value></data>
+  <data name="StorageSense.Title" xml:space="preserve"><value>Контроль памяти тоже чистит «Загрузки»</value></data>
+  <data name="StorageSense.Message" xml:space="preserve"><value>Windows удаляет файлы из «Загрузок» через {0} без Корзины и мимо этого журнала. Параметры Windows → Система → Память → Контроль памяти.</value></data>
+  <data name="SiteRules.Title" xml:space="preserve"><value>Правила по сайту</value></data>
+  <data name="SiteRules.Note" xml:space="preserve"><value>Срабатывает первое правило, совпавшее по сайту (с поддоменами) и расширению. Автоматические правила ждут 10 минут после старта; «Предложить к очистке» только кладёт файл во входящие.</value></data>
+  <data name="SiteRules.Add" xml:space="preserve"><value>Добавить правило</value></data>
+  <data name="SiteRules.Domain" xml:space="preserve"><value>Сайт, например github.com</value></data>
+  <data name="SiteRules.Extensions" xml:space="preserve"><value>Расширения: exe, msi</value></data>
+  <data name="SiteRules.Action.ttl" xml:space="preserve"><value>Срок жизни</value></data>
+  <data name="SiteRules.Action.move" xml:space="preserve"><value>Переложить в папку</value></data>
+  <data name="SiteRules.Action.clean" xml:space="preserve"><value>Предложить к очистке</value></data>
+  <data name="SiteRules.Folder" xml:space="preserve"><value>Выбрать папку…</value></data>
+  <data name="SiteRules.Auto" xml:space="preserve"><value>Автоматически</value></data>
+  <data name="SiteRules.Remove" xml:space="preserve"><value>Удалить правило</value></data>
+  <data name="Rules.Installers" xml:space="preserve"><value>Установленные MSI → Корзина</value></data>
+  <data name="Rules.Installers.Note" xml:space="preserve"><value>Только .msi, чей ProductCode Windows считает установленным, через {0} после того, как это найдено. Никогда .exe.</value></data>
+  <data name="Rules.Archives" xml:space="preserve"><value>Распакованные архивы → Корзина</value></data>
+  <data name="Rules.Archives.Note" xml:space="preserve"><value>Только если каждый файл архива лежит рядом с тем же размером, через {0} после того, как это найдено; перед удалением проверяется снова.</value></data>
+  <data name="Rules.ExactDays" xml:space="preserve"><value>Ждать перед двумя правилами выше, дней</value></data>
+  <data name="Rules.ExactDays.Note" xml:space="preserve"><value>С момента, когда найдено совпадение, а не с момента загрузки.</value></data>
+  <data name="Rule.FolderGone" xml:space="preserve"><value>Папки из правила больше нет: {0}</value></data>
+  <data name="Inbox.Apply" xml:space="preserve"><value>Применить</value></data>
+  <data name="Inbox.Freed" xml:space="preserve"><value>Освобождено за месяц: {0} ({1})</value></data>
+  <data name="Journal.Restore" xml:space="preserve"><value>Вернуть из Корзины</value></data>
+  <data name="Journal.RestoreTaken" xml:space="preserve"><value>На его месте уже лежит файл с таким именем.</value></data>
+  <data name="Journal.RestoreGone" xml:space="preserve"><value>В Корзине его уже нет.</value></data>
+  <data name="Op.restore" xml:space="preserve"><value>Возвращён из Корзины</value></data>
+  <data name="Rule.site" xml:space="preserve"><value>сайт</value></data>
+  <data name="Rule.installer" xml:space="preserve"><value>установлено</value></data>
+  <data name="Rule.archive" xml:space="preserve"><value>распакован</value></data>
+  <data name="Reason.site" xml:space="preserve"><value>Правило сайта: {0}</value></data>
+  <data name="Badge.Site" xml:space="preserve"><value>Правило {0}: предложено к очистке</value></data>
+  <data name="Badge.RuleMove" xml:space="preserve"><value>Правило {0}: переложить в {1}</value></data>
+  <data name="Badge.RuleTtl" xml:space="preserve"><value>Правило {0}: срок {1}</value></data>
+  <data name="Menu.Whence" xml:space="preserve"><value>Откуда этот файл?</value></data>
+  <data name="Whence.Title" xml:space="preserve"><value>Откуда этот файл?</value></data>
+  <data name="Whence.Copy" xml:space="preserve"><value>Скопировать адрес страницы?</value></data>
+  <data name="Whence.Unknown" xml:space="preserve"><value>Источник неизвестен: у файла нет Mark-of-the-Web (приватное окно, мессенджер, копия с диска или файл разблокирован).</value></data>
+  <data name="Whence.Created" xml:space="preserve"><value>Создан: {0}</value></data>
+  <data name="Whence.Site" xml:space="preserve"><value>Сайт: {0}</value></data>
+  <data name="Whence.Page" xml:space="preserve"><value>Страница: {0}</value></data>
+  <data name="Whence.Url" xml:space="preserve"><value>Адрес файла: {0}</value></data>
+  <data name="Whence.Downloaded" xml:space="preserve"><value>Скачан: {0}</value></data>
 </root>

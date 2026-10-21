@@ -66,6 +66,9 @@ public static class Fmt
             {
                 "installer" => string.Format(Loc.T("Badge.Installer." + s.Confidence), $"{s.Subject} {s.Version}".TrimEnd(), Loc.T("Why." + s.Why)),
                 "archive" => s.Subject.Length == 0 ? string.Format(Loc.T("Badge.ArchiveHere"), s.Percent) : string.Format(Loc.T("Badge.Archive"), s.Subject + "\\", s.Percent),
+                "site" => string.Format(Loc.T("Badge.Site"), s.Subject),
+                "rule" when s.Why == "move" => string.Format(Loc.T("Badge.RuleMove"), s.Subject, s.Arg),
+                "rule" => string.Format(Loc.T("Badge.RuleTtl"), s.Subject, int.TryParse(s.Arg, out var d) ? Plural("Ttl.Days", d) : s.Arg),
                 _ => string.Format(Loc.T("Badge.Duplicate"), s.Subject),
             };
         if (i.TtlUtc is { } t) return t <= nowUtc ? Loc.T("Badge.Expired") : string.Format(Loc.T("Badge.Expires"), Until(t, nowUtc));

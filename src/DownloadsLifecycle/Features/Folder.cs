@@ -7,8 +7,9 @@ using DownloadsLifecycle.Shell;
 namespace DownloadsLifecycle.Features;
 
 /// <summary>
-/// The watched folder. Release: the real Downloads (FOLDERID_Downloads). Debug: C:\Demo\Downloads or --watch-dir &lt;path&gt;,
-/// so a Debug build never touches the real Downloads (00-shared §9.4). --ttl-minutes (Debug, only under C:\Demo) turns days into minutes.
+/// The watched folders. The main one: Release the real Downloads (FOLDERID_Downloads), Debug C:\Demo\Downloads or --watch-dir &lt;path&gt;,
+/// so a Debug build never touches the real Downloads (00-shared §9.4). Extra ones (Telegram Desktop…) come from Settings.
+/// --ttl-minutes (Debug, only under C:\Demo) turns days into minutes.
 /// </summary>
 public static class Folder
 {
@@ -40,7 +41,26 @@ public static class Folder
 #endif
     }
 
-    public static bool Contains(string p) => Scanner.IsTopLevel(Path, p);
+    /// <summary>The main folder first, then the extra ones that are still allowed and exist.</summary>
+    public static IReadOnlyList<string> All =>
+        [Path, .. Settings.Current.ExtraFolders.Where(f => Allowed(f) is null && Directory.Exists(f)).Distinct(StringComparer.OrdinalIgnoreCase)];
+
+    /// <summary>Why a folder can't be watched, or null. Never a drive root, a folder that holds the main one, or Windows; Debug only under C:\Demo.</summary>
+    public static string? Allowed(string dir)
+    {
+        if (!System.IO.Path.IsPathFullyQualified(dir)) return "Folder.Bad";
+        var full = System.IO.Path.GetFullPath(dir).TrimEnd('\\');
+        if (full.Length <= 3 || Paths.IsUnder(full, Path) || Paths.IsUnder(Environment.GetFolderPath(Environment.SpecialFolder.Windows), full)) return "Folder.Bad";
+#if DEBUG
+        if (!Args.Current.Demo && !Paths.IsUnder(@"C:\Demo", full)) return "Folder.DebugOnlyDemo";
+#endif
+        return null;
+    }
+
+    /// <summary>The watched folder that holds <paramref name="p"/> at its top level, or null.</summary>
+    public static string? RootOf(string p) => All.FirstOrDefault(f => Scanner.IsTopLevel(f, p));
+
+    public static bool Contains(string p) => RootOf(p) is not null;
 
     /// <summary>
     /// VolumeSerial + 128-bit FileId (FILE_ID_INFO): survives renames and moves within the volume. Opened with FILE_READ_ATTRIBUTES only,

@@ -12,10 +12,17 @@ public sealed record Source(string? Referrer, string? Url, int? Zone)
 }
 
 /// <summary>
-/// A cleanup offer. Type: installer | archive | duplicate. Confidence: exact | likely | other (another version installed).
-/// Subject: product name, extracted folder or the kept duplicate's name. Kept structured so the UI can say it in either language.
+/// An offer. Type: installer | archive | duplicate | site (a site rule offers it for cleanup) | rule (a site rule's move or lifetime waits for Apply).
+/// Confidence: exact | likely | other (another version installed). Subject: product name, extracted folder, the kept duplicate's name, or the rule's domain.
+/// Arg: a rule's folder or days. FoundUtc: when this offer first appeared (exact-match rules wait N days from it).
+/// Kept structured so the UI can say it in either language.
 /// </summary>
-public sealed record Suggestion(string Type, string Confidence, string Subject, string? Version = null, int Percent = 0, string? Why = null);
+public sealed record Suggestion(string Type, string Confidence, string Subject, string? Version = null, int Percent = 0, string? Why = null,
+    string? Arg = null, DateTime? FoundUtc = null)
+{
+    /// <summary>The same offer, whenever it was found.</summary>
+    public bool Same(Suggestion? o) => o is not null && this with { FoundUtc = null } == o with { FoundUtc = null };
+}
 
 /// <summary>One top-level entry of the watched folder. Immutable: the worker swaps records, the UI gets snapshots.</summary>
 public sealed record Item
@@ -33,6 +40,7 @@ public sealed record Item
     public string? HashStamp { get; init; }         // size:mtime the hash belongs to
     public bool Kept { get; init; }
     public DateTime? TtlUtc { get; init; }
+    public bool Ruled { get; init; }                // a site rule was applied (or handled) once: never again
     public Suggestion? Suggestion { get; init; }
 
     [JsonIgnore] public string Name => System.IO.Path.GetFileName(Path);

@@ -139,3 +139,43 @@ public static class Mover
         return target;
     }
 }
+
+/// <summary>
+/// v1.0 "Restore": the Shell's Recycle Bin folder (Shell.Application, NameSpace 10) and its "undelete" verb, on the UI (STA) thread.
+/// Picks the item deleted from that folder with that name, closest to the journal time. If the Shell won't, "Show in Recycle Bin" is still there.
+/// </summary>
+public static class RecycleBin
+{
+    public static bool Restore(string path, DateTime deletedUtc)
+    {
+        if (Args.Current.Demo) return true;
+        var dir = Path.GetDirectoryName(path)!.TrimEnd('\\');
+        var name = Path.GetFileName(path);
+        dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application")!)!;
+        try
+        {
+            dynamic? best = null;
+            var gap = double.MaxValue;
+            foreach (dynamic item in shell.NameSpace(10).Items())
+            {
+                if (item.ExtendedProperty("System.Recycle.DeletedFrom") is not string from || !string.Equals(from.TrimEnd('\\'), dir, StringComparison.OrdinalIgnoreCase)) continue;
+                string shown = item.Name, stored = item.Path; // Name may lack the extension when Explorer hides them; the $R… path keeps it
+                if (!string.Equals(Path.GetExtension(stored), Path.GetExtension(name), StringComparison.OrdinalIgnoreCase)
+                    || !(string.Equals(shown, name, StringComparison.OrdinalIgnoreCase) || string.Equals(shown, Path.GetFileNameWithoutExtension(name), StringComparison.OrdinalIgnoreCase)))
+                    continue;
+                var when = item.ExtendedProperty("System.Recycle.DateDeleted") is DateTime d ? d.ToUniversalTime() : DateTime.MinValue;
+                if (Math.Abs((when - deletedUtc).TotalSeconds) is var g && g < gap) (best, gap) = (item, g);
+            }
+            if (best is null) return false;
+            best.InvokeVerb("undelete");
+            for (var n = 0; n < 30 && !Path.Exists(path); n++) Thread.Sleep(100); // the Shell may finish a moment later
+            return Path.Exists(path);
+        }
+        catch (Exception e) when (e is COMException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException or InvalidCastException)
+        {
+            Log.Warn("restore failed: " + Fmt.Err(e));
+            return false;
+        }
+        finally { Marshal.FinalReleaseComObject(shell); }
+    }
+}

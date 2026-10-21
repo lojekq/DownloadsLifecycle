@@ -16,12 +16,45 @@ namespace DownloadsLifecycle.Shell
         public string? RemindedOn { get; set; }               // local date, yyyy-MM-dd
         public bool ContextMenu { get; set; } = true;         // registered by itself only when installed (00-shared §2.4)
         public List<string> RecentFolders { get; set; } = [];
+        public List<string> ExtraFolders { get; set; } = [];      // v1.0: watched like Downloads (Telegram Desktop…)
+        public List<Features.SiteRule> SiteRules { get; set; } = []; // v1.0: first match wins
+        public bool AutoInstallers { get; set; }              // v1.0: exact MSI matches → Recycle Bin after ExactDays; off by default
+        public bool AutoArchives { get; set; }                // v1.0: archives extracted at 100 % → Recycle Bin after ExactDays; off by default
+        public int ExactDays { get; set; } = 3;
         public bool WelcomeDone { get; set; }
     }
 }
 
 namespace DownloadsLifecycle.Features
 {
+    /// <summary>
+    /// v1.0 site rule: a domain (with its subdomains) and optional extensions → move to a folder, a lifetime of N days,
+    /// or "offer for cleanup". Auto applies it by itself; otherwise it waits in the inbox with an Apply button. "clean" is never automatic.
+    /// </summary>
+    public sealed class SiteRule
+    {
+        public string Domain { get; set; } = "";
+        public string Extensions { get; set; } = "";     // "exe, msi" — empty: any file
+        public string Action { get; set; } = "ttl";       // ttl | move | clean
+        public string? Folder { get; set; }
+        public int Days { get; set; } = 7;
+        public bool Auto { get; set; }
+
+        static string Norm(string d) => d.Trim().TrimStart('.').ToLowerInvariant();
+
+        public bool Matches(Item i)
+        {
+            var domain = Norm(Domain);
+            if (domain.Length == 0 || i.IsDir || i.Src is null) return false;
+            var hosts = new[] { ZoneReader.Host(i.Src.Referrer), ZoneReader.Host(i.Src.Url) }.OfType<string>();
+            if (!hosts.Any(h => h == domain || h.EndsWith("." + domain, StringComparison.Ordinal))) return false;
+            var exts = Extensions.Split([',', ';', ' '], StringSplitOptions.RemoveEmptyEntries).Select(e => "." + e.Trim().TrimStart('.').ToLowerInvariant()).ToList();
+            return exts.Count == 0 || exts.Any(e => i.Name.EndsWith(e, StringComparison.OrdinalIgnoreCase)); // ".tar.gz" works too
+        }
+
+        public static SiteRule? First(IEnumerable<SiteRule> rules, Item i) => rules.FirstOrDefault(r => r.Matches(i));
+    }
+
     /// <summary>A lifetime command: from the context menu (--ttl 7d "path") or the window.</summary>
     public sealed record TtlCommand(string Op, int Days = 0, DateTime? UntilLocal = null) // Op: days | date | keep | clear
     {
@@ -55,7 +88,7 @@ namespace DownloadsLifecycle.Features
         public static bool Expired(Item i, DateTime nowUtc) => !i.Kept && i.TtlUtc <= nowUtc;
 
         /// <summary>Offered for cleanup: a detector's suggestion or an ended lifetime.</summary>
-        public static bool ToClean(Item i, DateTime nowUtc) => !i.Kept && (i.Suggestion is not null || Expired(i, nowUtc));
+        public static bool ToClean(Item i, DateTime nowUtc) => !i.Kept && (i.Suggestion is { Type: not "rule" } || Expired(i, nowUtc));
 
         /// <summary>New since the last triage, offered for cleanup, or ending within a day.</summary>
         public static bool InInbox(Item i, DateTime lastTriageUtc, DateTime nowUtc, TimeSpan day) =>
@@ -82,7 +115,22 @@ namespace DownloadsLifecycle.Features
                         && items.Any(k => k.Key != i.Key && k.Name == i.Suggestion.Subject && k.Sha256 == i.Sha256 && k.Sha256 is not null)
                         && plan.All(p => p.Item1.Key != i.Key))
                         plan.Add((i, "rule:duplicate"));
+            bool Settled(Item i) => i.Suggestion?.FoundUtc is { } f && nowUtc - f >= TimeSpan.FromDays(s.ExactDays) && Small(i) && !i.Kept
+                && nowUtc - i.CreatedUtc >= TimeSpan.FromHours(s.GraceHours) && plan.All(p => p.Item1.Key != i.Key);
+            if (s.AutoInstallers) // MSI by ProductCode only: an exe match is never exact enough to delete by itself
+                plan.AddRange(items.Where(i => i.Suggestion is { Type: "installer", Confidence: "exact", Why: "msi" } && Settled(i)).Select(i => (i, "rule:installer")));
+            if (s.AutoArchives)
+                plan.AddRange(items.Where(i => i.Suggestion is { Type: "archive", Percent: 100 } && Settled(i)).Select(i => (i, "rule:archive")));
             return plan;
+        }
+
+        /// <summary>v1.0 inbox line: files let go into the Recycle Bin this calendar month (local time), by you or a rule, minus the restored ones.</summary>
+        public static (int Count, long Bytes) FreedThisMonth(IEnumerable<JournalEntry> journal, DateTime nowLocal)
+        {
+            var month = journal.Where(e => e.T.ToLocalTime() is var t && t.Year == nowLocal.Year && t.Month == nowLocal.Month).ToList();
+            var restored = month.Where(e => e.Op == "restore").Select(e => e.Path).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var gone = month.Where(e => e.Op == "recycle" && !restored.Contains(e.Path)).ToList();
+            return (gone.Count, gone.Sum(e => e.Size));
         }
 
         /// <summary>Journal reason for an item: "duplicate|a.pdf", "installer|Git 2.47.0", "archive|blender", "expired" or "".</summary>
@@ -91,6 +139,7 @@ namespace DownloadsLifecycle.Features
             { Type: "duplicate" } s => $"duplicate|{s.Subject}",
             { Type: "installer" } s => $"installer|{s.Subject} {s.Version}".TrimEnd(),
             { Type: "archive" } s => $"archive|{s.Subject}",
+            { Type: "site" } s => $"site|{s.Subject}",
             _ when Expired(i, nowUtc) => "expired",
             _ => "",
         };

@@ -103,6 +103,8 @@
                             <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyUrl" ToolTip="{l:T Files.Copy}" AutomationProperties.Name="{l:T Files.Copy}" VerticalAlignment="Top" />
                             <ui:TextBlock Text="{Binding UrlText}" TextWrapping="Wrap" FontTypography="Caption" />
                         </DockPanel>
+                        <ui:TextBlock Text="{l:T Files.Folder}" Style="{StaticResource Label}" />
+                        <ui:TextBlock Text="{Binding FolderText}" TextWrapping="Wrap" FontTypography="Caption" />
                         <ui:TextBlock Text="{l:T Files.Zone}" Style="{StaticResource Label}" />
                         <ui:TextBlock Text="{Binding ZoneText}" FontTypography="Caption" />
                         <ui:TextBlock Text="{l:T Files.Type}" Style="{StaticResource Label}" />

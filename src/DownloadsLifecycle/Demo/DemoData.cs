@@ -51,6 +51,8 @@ public static class DemoData
         Add("llama-b4500-bin-win-cuda-x64.zip", 182 * MB, 0.2, gh, "https://github.com/ggml-org/llama.cpp/releases", ghFiles + "612354784/llama-b4500-bin-win-cuda-x64.zip");
         Add("screenshot_0412.png", (long)(1.4 * MB), 0.1, "cdn.discordapp.com", "https://discord.com/", "https://cdn.discordapp.com/attachments/1/2/screenshot_0412.png");
         Add("notes.txt", 3 * KB, 0.05, null);
+        Add("LM-Studio-0.3.9-Setup.exe", 412 * MB, 0.15, gh, "https://github.com/lmstudio-ai/lmstudio/releases", ghFiles + "1/LM-Studio-0.3.9-Setup.exe",
+            new("rule", "exact", "github.com", Why: "move", Arg: @"D:\Installers"));
 
         // Older, already sorted
         Add("Qwen3-8B-Q4_K_M.gguf", 5 * GB, 9, "huggingface.co", "https://huggingface.co/Qwen/Qwen3-8B-GGUF", "https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q4_K_M.gguf", kept: true);
@@ -76,6 +78,13 @@ public static class DemoData
 
         Engine.ShowDemo(new(items, lastTriage));
         Settings.Current.WelcomeDone = true;
+        Settings.Current.ExtraFolders = [Dir + "Telegram Desktop"];
+        Settings.Current.SiteRules =
+        [
+            new() { Domain = "github.com", Extensions = "exe, msi", Action = "move", Folder = @"D:\Installers" },
+            new() { Domain = "huggingface.co", Extensions = "gguf, safetensors", Action = "ttl", Days = 30, Auto = true },
+            new() { Domain = "cdn.discordapp.com", Action = "clean" },
+        ];
         FilesPage.Preset = (true, "Git-2.47.0-64-bit.exe");
 
         Journal.AddRange(
@@ -88,6 +97,8 @@ public static class DemoData
             new(now.AddDays(-2), "move", Dir + "tax-return-2025.pdf", 640 * KB, "", "user", @"C:\Users\demo\Documents\Taxes\tax-return-2025.pdf"),
             new(now.AddDays(-3), "recycle", Dir + "7z2408-x64.exe", (long)(1.6 * MB), "installer|7-Zip 24.08 (x64)", "user"),
             new(now.AddDays(-4), "keep", Dir + "Qwen3-8B-Q4_K_M.gguf", 5 * GB, "", "user"),
+            new(now.AddDays(-5), "move", Dir + "PowerToysSetup-0.85.1-x64.exe", 236 * MB, "site|github.com", "rule:site", @"D:\Installers\PowerToysSetup-0.85.1-x64.exe"),
+            new(now.AddDays(-6), "recycle", Dir + "node-v22.11.0-x64.msi", 31 * MB, "installer|Node.js 22.11.0", "rule:installer"),
         ]);
     }
 }

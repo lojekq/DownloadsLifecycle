@@ -20,6 +20,8 @@ public sealed class Row(Item item, DateTime nowUtc)
     public string Name => Item.Name;
     public string? Badge { get; } = Fmt.Badge(item, nowUtc);
     public bool Cleanable { get; } = Rules.ToClean(item, nowUtc);
+    public bool IsRule => Item.Suggestion?.Type == "rule";
+    public string FolderText => System.IO.Path.GetDirectoryName(Item.Path) ?? "";
     public string SiteText => Item.Site ?? Loc.T("Site.Unknown");
     public string SiteLetter => Item.Site is { } s ? char.ToUpperInvariant(s[0]).ToString() : "?";
     public string SizeText => Fmt.Size(Item.Size);

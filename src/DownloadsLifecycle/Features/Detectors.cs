@@ -223,50 +223,94 @@ public static class Installers
     }
 }
 
-/// <summary>.zip only (central directory, nothing extracted). Covered entries = same name and size in a folder next to the archive.</summary>
-public static class ZipCoverage
+/// <summary>
+/// Archives that were already extracted next to themselves. Only the list of entries is read, nothing is extracted:
+/// .zip with ZipArchive (central directory), .7z and .rar from their headers, .tar and .tar.gz / .tgz / .tar.xz / .tar.bz2 / .tar.zst
+/// by walking the tar headers (v1.0, SharpCompress). Covered entry = same name and size in a folder next to the archive.
+/// </summary>
+public static class Archives
 {
     public const int Threshold = 98;
-    public const int MaxEntries = 20_000; // ponytail: bigger archives aren't checked; raise if real archives hit it
+    public const int MaxEntries = 20_000;      // ponytail: bigger archives aren't checked; raise if real archives hit it
+    const long MaxTarBytes = 4L << 30;         // ponytail: a compressed tar is read end to end to list it; bigger ones are skipped
+
+    static readonly string[] Tars = [".tar", ".tar.gz", ".tgz", ".tar.xz", ".tar.bz2", ".tar.zst"];
+
+    public static bool Supported(string path) =>
+        path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".7z", StringComparison.OrdinalIgnoreCase)
+        || path.EndsWith(".rar", StringComparison.OrdinalIgnoreCase) || Tars.Any(t => path.EndsWith(t, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>"blender-4.3.0.zip" → "blender-4.3.0"; "llama.tar.gz" → "llama".</summary>
+    public static string Stem(string path)
+    {
+        var name = Path.GetFileName(path);
+        var tar = Tars.FirstOrDefault(t => name.EndsWith(t, StringComparison.OrdinalIgnoreCase));
+        return tar is null ? Path.GetFileNameWithoutExtension(name) : name[..^tar.Length];
+    }
+
+    /// <summary>File entries (name with '/', size), or null when the archive can't be listed (broken, encrypted headers, too big).</summary>
+    public static List<(string Name, long Size)>? Entries(string path)
+    {
+        try
+        {
+            if (path.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+            {
+                using var z = ZipFile.OpenRead(path);
+                return Limit(z.Entries.Where(e => !e.FullName.EndsWith('/') && !e.FullName.EndsWith('\\')).Select(e => (e.FullName, e.Length)));
+            }
+            if (Tars.Any(t => path.EndsWith(t, StringComparison.OrdinalIgnoreCase)))
+            {
+                if (new FileInfo(path).Length > MaxTarBytes) return null;
+                using var r = SharpCompress.Readers.ReaderFactory.OpenReader(path);
+                var list = new List<(string, long)>();
+                while (r.MoveToNextEntry())
+                {
+                    if (!r.Entry.IsDirectory && r.Entry.Key is { } k) list.Add((k, r.Entry.Size));
+                    if (list.Count > MaxEntries) return null;
+                }
+                return Limit(list);
+            }
+            using var a = SharpCompress.Archives.ArchiveFactory.OpenArchive(path);
+            return Limit(a.Entries.Where(e => !e.IsDirectory && e.Key is not null).Select(e => (e.Key!, e.Size)));
+        }
+        catch (Exception e) when (e is not OperationCanceledException and not OutOfMemoryException) { return null; } // broken, encrypted, unknown: no offer
+    }
+
+    static List<(string, long)>? Limit(IEnumerable<(string Name, long Size)> entries)
+    {
+        var list = entries.Select(e => (e.Name.Replace('\\', '/'), e.Size)).Where(e => !e.Item1.Contains("..")).Take(MaxEntries + 1).ToList();
+        return list.Count is 0 or > MaxEntries ? null : list;
+    }
 
     /// <summary>Best coverage in %, floored (99.9 is not 100), and where: "" = right next to the archive, else a folder name.</summary>
-    public static (int Percent, string Where)? Check(string zip)
+    public static (int Percent, string Where)? Check(string archive)
     {
-        List<ZipArchiveEntry> files;
-        ZipArchive z;
-        try { z = ZipFile.OpenRead(zip); }
-        catch (Exception e) when (e is IOException or InvalidDataException or UnauthorizedAccessException) { return null; }
-        using (z)
-        {
-            files = z.Entries.Where(e => !e.FullName.EndsWith('/') && !e.FullName.EndsWith('\\') && !e.FullName.Contains("..")).ToList();
-            if (files.Count == 0 || files.Count > MaxEntries) return null;
-            var dir = Path.GetDirectoryName(zip)!;
-            var stem = Path.GetFileNameWithoutExtension(zip);
-            var roots = files.Select(e => e.FullName.Replace('\\', '/').Split('/')[0]).Distinct().ToList();
-            var root = roots.Count == 1 && files.All(e => e.FullName.Replace('\\', '/').Contains('/')) ? roots[0] + "/" : null;
+        if (Entries(archive) is not { } files) return null;
+        var dir = Path.GetDirectoryName(archive)!;
+        var stem = Stem(archive);
+        var roots = files.Select(e => e.Name.Split('/')[0]).Distinct().ToList();
+        var root = roots.Count == 1 && files.All(e => e.Name.Contains('/')) ? roots[0] + "/" : null;
 
-            // <name>\ as is (Explorer "Extract all"), right here (7-Zip "Extract here"), <name>\ with the single root folder dropped
-            (string Base, string? Strip, string Where)[] candidates =
-            [
-                (Path.Combine(dir, stem), null, stem),
-                (dir, null, root is null ? "" : root.TrimEnd('/')),
-                (Path.Combine(dir, stem), root, stem),
-            ];
-            (int, string)? best = null;
-            foreach (var (b, strip, where) in candidates)
+        // <name>\ as is (Explorer "Extract all"), right here (7-Zip "Extract here"), <name>\ with the single root folder dropped
+        (string Base, string? Strip, string Where)[] candidates =
+        [
+            (Path.Combine(dir, stem), null, stem),
+            (dir, null, root is null ? "" : root.TrimEnd('/')),
+            (Path.Combine(dir, stem), root, stem),
+        ];
+        (int, string)? best = null;
+        foreach (var (b, strip, where) in candidates)
+        {
+            if (!Directory.Exists(b)) continue;
+            var hit = files.Count(e =>
             {
-                if (!Directory.Exists(b)) continue;
-                var hit = files.Count(e =>
-                {
-                    var rel = e.FullName.Replace('\\', '/');
-                    if (strip is not null) rel = rel[strip.Length..];
-                    var f = new FileInfo(Path.Combine(b, rel.Replace('/', '\\')));
-                    return f.Exists && f.Length == e.Length;
-                });
-                var pct = (int)(hit * 100L / files.Count);
-                if (best is null || pct > best.Value.Item1) best = (pct, where);
-            }
-            return best;
+                var rel = strip is null ? e.Name : e.Name[strip.Length..];
+                var f = new FileInfo(Path.Combine(b, rel.Replace('/', '\\')));
+                return f.Exists && f.Length == e.Size;
+            });
+            var pct = (int)(hit * 100L / files.Count);
+            if (best is null || pct > best.Value.Item1) best = (pct, where);
         }
+        return best;
     }
 }

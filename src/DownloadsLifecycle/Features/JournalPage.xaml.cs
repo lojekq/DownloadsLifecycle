@@ -42,6 +42,11 @@ public partial class JournalPage
 
     void FilterClick(object sender, RoutedEventArgs e) => Fill();
 
+    void RestoreClick(object sender, RoutedEventArgs e)
+    {
+        if (((FrameworkElement)sender).DataContext is JournalRow r) Actions.Restore(r.Entry);
+    }
+
     void ReturnClick(object sender, RoutedEventArgs e)
     {
         if (((FrameworkElement)sender).DataContext is JournalRow r) Actions.Return(r.Entry);

@@ -21,7 +21,7 @@ public sealed class Scanner(Index index, string folder)
         var seen = new HashSet<string>();
         foreach (var p in Directory.EnumerateFileSystemEntries(Folder))
             if (Upsert(p) is { } key) seen.Add(key);
-        foreach (var gone in index.Items.Values.Where(i => !seen.Contains(i.Key) && !pending.ContainsKey(i.Path)).Select(i => i.Key).ToList())
+        foreach (var gone in index.Items.Values.Where(i => IsTopLevel(Folder, i.Path) && !seen.Contains(i.Key) && !pending.ContainsKey(i.Path)).Select(i => i.Key).ToList())
             index.Remove(gone);
     }
 
@@ -68,7 +68,7 @@ public sealed class Scanner(Index index, string folder)
     /// <summary>Folder sizes go stale (the watcher doesn't look inside); the 15 min tick refreshes them.</summary>
     public void RefreshFolderSizes()
     {
-        foreach (var i in index.Items.Values.Where(i => i.IsDir).ToList())
+        foreach (var i in index.Items.Values.Where(i => i.IsDir && IsTopLevel(Folder, i.Path)).ToList())
             if (Directory.Exists(i.Path)) index.Set(i with { Size = DirSize(i.Path) });
     }
 

@@ -33,6 +33,7 @@
                     </DockPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <ui:Button x:Name="ApplyButton" Content="{l:T Inbox.Apply}" Click="ApplyClick" Margin="0,0,4,0" Padding="10,4" Appearance="Primary" Visibility="Collapsed" />
                     <ui:Button Content="{l:T Inbox.Keep}" Click="KeepClick" Margin="0,0,4,0" Padding="10,4" ToolTip="K" />
                     <ui:Button Content="{l:T Inbox.Move}" Click="MoveClick" Margin="0,0,4,0" Padding="10,4" ToolTip="M" />
                     <ui:Button Click="TtlClick" Margin="0,0,4,0" Padding="10,4" ToolTip="T" AutomationProperties.Name="{l:T Inbox.Ttl}">
@@ -47,6 +48,9 @@
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Badge}" Value="{x:Null}">
                     <Setter TargetName="BadgeBox" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsRule}" Value="True">
+                    <Setter TargetName="ApplyButton" Property="Visibility" Value="Visible" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Cleanable}" Value="False">
                     <Setter TargetName="BadgeBox" Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
@@ -70,6 +74,7 @@
             <StackPanel>
                 <ui:TextBlock FontTypography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="{l:T Page.Inbox}" />
                 <ui:TextBlock x:Name="SummaryText" Appearance="Secondary" Margin="0,4,0,0" />
+                <ui:TextBlock x:Name="FreedText" Appearance="Tertiary" FontTypography="Caption" Margin="0,2,0,0" />
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
                 <ui:Button x:Name="SeenButton" Content="{l:T Inbox.MarkSeen}" Click="SeenClick" Margin="0,0,8,0" />

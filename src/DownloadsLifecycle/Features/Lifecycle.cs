@@ -93,6 +93,23 @@ public static class Lifecycle
     }
 }
 
+/// <summary>
+/// v1.0: is Windows Storage Sense set to clear Downloads as well? HKCU …\StorageSense\Parameters\StoragePolicy: "01" = 1 Storage Sense on,
+/// "512" = days before Downloads files go (0 = never). Community-documented values, read only (08 §6): the days, or null.
+/// </summary>
+public static class StorageSense
+{
+    public static int? DownloadsDays()
+    {
+        try
+        {
+            using var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\StorageSense\Parameters\StoragePolicy");
+            return k?.GetValue("01") is 1 && k.GetValue("512") is int days and > 0 ? days : null;
+        }
+        catch (Exception e) when (e is System.Security.SecurityException or UnauthorizedAccessException or System.IO.IOException) { return null; }
+    }
+}
+
 /// <summary>Daily balloon "Inbox: 12 files, 3.4 GB to clean". Not during a fullscreen game or presentation: an hour later then.</summary>
 public static class Reminder
 {

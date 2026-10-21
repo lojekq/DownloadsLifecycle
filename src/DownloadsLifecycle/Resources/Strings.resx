@@ -200,4 +200,52 @@ Open the folder?</value></data>
   <data name="Verdict.InUse" xml:space="preserve"><value>open in another program</value></data>
   <data name="Verdict.TooYoung" xml:space="preserve"><value>younger than the grace period</value></data>
   <data name="Verdict.TooBig" xml:space="preserve"><value>bigger than the size limit</value></data>
+  <data name="Folder.Bad" xml:space="preserve"><value>This folder can't be watched: not a drive root, not a folder that holds Downloads, not Windows.</value></data>
+  <data name="Folder.DebugOnlyDemo" xml:space="preserve"><value>A Debug build watches folders under C:\Demo only.</value></data>
+  <data name="Folders.Add" xml:space="preserve"><value>Add a folder…</value></data>
+  <data name="Folders.Telegram" xml:space="preserve"><value>Add Telegram Desktop downloads</value></data>
+  <data name="Folders.Remove" xml:space="preserve"><value>Stop watching</value></data>
+  <data name="Files.Folder" xml:space="preserve"><value>Folder</value></data>
+  <data name="StorageSense.Title" xml:space="preserve"><value>Storage Sense also clears Downloads</value></data>
+  <data name="StorageSense.Message" xml:space="preserve"><value>Windows deletes files in Downloads after {0} without the Recycle Bin and without this journal. Windows Settings → System → Storage → Storage Sense.</value></data>
+  <data name="SiteRules.Title" xml:space="preserve"><value>Site rules</value></data>
+  <data name="SiteRules.Note" xml:space="preserve"><value>The first rule that matches the site (with its subdomains) and the extension wins. Automatic rules wait 10 minutes after start; "Offer for cleanup" only puts the file into the inbox.</value></data>
+  <data name="SiteRules.Add" xml:space="preserve"><value>Add a rule</value></data>
+  <data name="SiteRules.Domain" xml:space="preserve"><value>Site, e.g. github.com</value></data>
+  <data name="SiteRules.Extensions" xml:space="preserve"><value>Extensions: exe, msi</value></data>
+  <data name="SiteRules.Action.ttl" xml:space="preserve"><value>Lifetime</value></data>
+  <data name="SiteRules.Action.move" xml:space="preserve"><value>Move to a folder</value></data>
+  <data name="SiteRules.Action.clean" xml:space="preserve"><value>Offer for cleanup</value></data>
+  <data name="SiteRules.Folder" xml:space="preserve"><value>Choose a folder…</value></data>
+  <data name="SiteRules.Auto" xml:space="preserve"><value>Automatic</value></data>
+  <data name="SiteRules.Remove" xml:space="preserve"><value>Delete the rule</value></data>
+  <data name="Rules.Installers" xml:space="preserve"><value>Installed MSI → Recycle Bin</value></data>
+  <data name="Rules.Installers.Note" xml:space="preserve"><value>Only .msi files whose ProductCode Windows reports as installed, {0} after that was found. Never .exe.</value></data>
+  <data name="Rules.Archives" xml:space="preserve"><value>Extracted archives → Recycle Bin</value></data>
+  <data name="Rules.Archives.Note" xml:space="preserve"><value>Only when every file of the archive is next to it with the same size, {0} after that was found; checked again right before.</value></data>
+  <data name="Rules.ExactDays" xml:space="preserve"><value>Wait before the two rules above, days</value></data>
+  <data name="Rules.ExactDays.Note" xml:space="preserve"><value>From the moment the match was found, not from the download.</value></data>
+  <data name="Rule.FolderGone" xml:space="preserve"><value>The rule's folder is gone: {0}</value></data>
+  <data name="Inbox.Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Inbox.Freed" xml:space="preserve"><value>Freed this month: {0} ({1})</value></data>
+  <data name="Journal.Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Journal.RestoreTaken" xml:space="preserve"><value>A file with this name is already in its place.</value></data>
+  <data name="Journal.RestoreGone" xml:space="preserve"><value>It is no longer in the Recycle Bin.</value></data>
+  <data name="Op.restore" xml:space="preserve"><value>Restored</value></data>
+  <data name="Rule.site" xml:space="preserve"><value>site</value></data>
+  <data name="Rule.installer" xml:space="preserve"><value>installed</value></data>
+  <data name="Rule.archive" xml:space="preserve"><value>extracted</value></data>
+  <data name="Reason.site" xml:space="preserve"><value>Site rule: {0}</value></data>
+  <data name="Badge.Site" xml:space="preserve"><value>Site rule {0}: offered for cleanup</value></data>
+  <data name="Badge.RuleMove" xml:space="preserve"><value>Site rule {0}: move to {1}</value></data>
+  <data name="Badge.RuleTtl" xml:space="preserve"><value>Site rule {0}: lifetime {1}</value></data>
+  <data name="Menu.Whence" xml:space="preserve"><value>Where is it from?</value></data>
+  <data name="Whence.Title" xml:space="preserve"><value>Where is it from?</value></data>
+  <data name="Whence.Copy" xml:space="preserve"><value>Copy the page address?</value></data>
+  <data name="Whence.Unknown" xml:space="preserve"><value>The source is unknown: the file has no Mark-of-the-Web (a private window, a messenger, a copy from a disk, or it was unblocked).</value></data>
+  <data name="Whence.Created" xml:space="preserve"><value>Created: {0}</value></data>
+  <data name="Whence.Site" xml:space="preserve"><value>Site: {0}</value></data>
+  <data name="Whence.Page" xml:space="preserve"><value>Page: {0}</value></data>
+  <data name="Whence.Url" xml:space="preserve"><value>File address: {0}</value></data>
+  <data name="Whence.Downloaded" xml:space="preserve"><value>Downloaded: {0}</value></data>
 </root>

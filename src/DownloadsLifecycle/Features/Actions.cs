@@ -103,10 +103,14 @@ public static class Actions
     /// <summary>Opt-in rules, from the worker's plan: no undo window (the Recycle Bin and the journal are the undo), silent while a game runs.</summary>
     public static void RunAuto(List<(Item Item, string Rule)> plan)
     {
+        IReadOnlyList<UninstallEntry>? installed = null;
         foreach (var (i, rule) in plan)
         {
             if (rule == "rule:duplicate" && !Engine.Current.Items.Any(k => k.Key != i.Key && k.Name == i.Suggestion?.Subject && k.Sha256 == i.Sha256 && File.Exists(k.Path)))
                 continue; // the copy that stays must still be there
+            // exact-match rules (v1.0) look again right before: still installed by ProductCode, still extracted to the last file
+            if (rule == "rule:installer" && Installers.Check(i, installed ??= UninstallEntries.List()) is not { Confidence: "exact", Why: "msi" }) continue;
+            if (rule == "rule:archive" && Archives.Check(i.Path) is not { Percent: 100 }) continue;
             if (Recycle(i, auto: true, rule) == Verdict.Ok) autoSummary = (autoSummary.Count + 1, autoSummary.Bytes + i.Size);
         }
         if (autoSummary.Count == 0 || UserBusy.Now) return; // shown later, once the game is over
@@ -134,7 +138,6 @@ public static class Actions
     /// <summary>"Move…": same volume = rename, another volume = copy, verify, then the source to the Recycle Bin.</summary>
     public static void MoveTo(IEnumerable<Item> items, string dir)
     {
-        if (string.Equals(Path.GetFullPath(dir).TrimEnd('\\'), Folder.Path.TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)) return; // already here
         S.RecentFolders.RemoveAll(d => string.Equals(d, dir, StringComparison.OrdinalIgnoreCase));
         S.RecentFolders.Insert(0, dir);
         if (S.RecentFolders.Count > 5) S.RecentFolders.RemoveRange(5, S.RecentFolders.Count - 5);
@@ -143,22 +146,69 @@ public static class Actions
         var errors = new List<string>();
         foreach (var i in items)
         {
-            var now = DateTime.UtcNow;
-            var v = Args.Current.Demo ? Verdict.Ok : SafetyGate.Check(Facts.Observe(i, now) with { FixedDrive = true }, auto: false, 0, long.MaxValue);
-            if (v != Verdict.Ok) { errors.Add($"{i.Name}: {Loc.T("Verdict." + v)}"); continue; }
-            try
-            {
-                var to = Mover.Move(i.Path, dir, i.IsDir, Owner);
-                Index.Append(new(now, "move", i.Path, i.Size, Rules.Reason(i, now), "user", to, i.Sha256));
-                Engine.Forget(i.Key);
-            }
-            catch (Exception e) when (e is IOException or UnauthorizedAccessException or NotSupportedException)
-            {
-                Log.Warn("move failed: " + Fmt.Err(e));
-                errors.Add($"{i.Name}: {e.Message}");
-            }
+            var v = Args.Current.Demo ? Verdict.Ok : SafetyGate.Check(Facts.Observe(i, DateTime.UtcNow) with { FixedDrive = true }, auto: false, 0, long.MaxValue);
+            if (v != Verdict.Ok) errors.Add($"{i.Name}: {Loc.T("Verdict." + v)}");
+            else if (Move(i, dir, "user", Rules.Reason(i, DateTime.UtcNow)) is { } error) errors.Add(error);
         }
         if (errors.Count > 0) Notice?.Invoke(string.Join("\n", errors));
+    }
+
+    /// <summary>One move with its journal line; the error text for the user, or null.</summary>
+    static string? Move(Item i, string dir, string by, string reason)
+    {
+        if (string.Equals(Path.GetDirectoryName(i.Path), Path.GetFullPath(dir).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase)) return null; // already there
+        try
+        {
+            var to = Mover.Move(i.Path, dir, i.IsDir, Owner);
+            Index.Append(new(DateTime.UtcNow, "move", i.Path, i.Size, reason, by, to, i.Sha256));
+            Engine.Forget(i.Key);
+            return null;
+        }
+        catch (Exception e) when (e is IOException or UnauthorizedAccessException or NotSupportedException)
+        {
+            Log.Warn("move failed: " + Fmt.Err(e));
+            return $"{i.Name}: {e.Message}";
+        }
+    }
+
+    /// <summary>
+    /// v1.0 site rules in auto mode: a file goes to the rule's folder once it's ready (not written, not open; not before 10 min after start).
+    /// A folder that is gone, a kept file or a failed move stop the rule for that file; "in use" waits for the next pass.
+    /// </summary>
+    public static void RunRuleMoves(List<(Item Item, string Folder)> moves)
+    {
+        foreach (var (i, dir) in moves)
+        {
+            var v = SafetyGate.Check(Facts.Observe(i, DateTime.UtcNow) with { FixedDrive = true }, auto: true, 0, long.MaxValue);
+            if (v is Verdict.InUse or Verdict.Changed) continue;
+            if (v != Verdict.Ok || !Directory.Exists(dir) || Move(i, dir, "rule:site", $"site|{i.Site}") is not null)
+            {
+                Engine.MarkRuled(i.Key);
+                if (!Directory.Exists(dir)) Notice?.Invoke(string.Format(Loc.T("Rule.FolderGone"), dir));
+            }
+        }
+    }
+
+    /// <summary>The inbox's Apply on a site rule that waits for the user (v1.0): move to its folder or give its lifetime.</summary>
+    public static void ApplyRule(Item i)
+    {
+        if (i.Suggestion is not { Type: "rule" } s) return;
+        if (s.Why == "move" && s.Arg is { } dir)
+        {
+            if (Directory.Exists(dir)) MoveTo([i], dir);
+            else Notice?.Invoke(string.Format(Loc.T("Rule.FolderGone"), dir));
+            return;
+        }
+        if (int.TryParse(s.Arg, out var days)) Engine.Apply([i.Key], new("days", days));
+        Engine.MarkRuled(i.Key);
+    }
+
+    /// <summary>v1.0 journal "Restore": a file let go goes back from the Recycle Bin to where it was.</summary>
+    public static void Restore(JournalEntry e)
+    {
+        if (Path.Exists(e.Path)) { Notice?.Invoke(Loc.T("Journal.RestoreTaken")); return; }
+        if (RecycleBin.Restore(e.Path, e.T)) Index.Append(new(DateTime.UtcNow, "restore", e.Path, e.Size, "", "user"));
+        else Notice?.Invoke(Loc.T("Journal.RestoreGone"));
     }
 
     /// <summary>Journal "Return": a moved file goes back to where it was (a free name if that one is taken).</summary>

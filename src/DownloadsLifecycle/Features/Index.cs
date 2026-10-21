@@ -55,6 +55,17 @@ public sealed class Index
         return f is null ? null : new(f.Items.Where(i => i.Key is not null && i.Path is not null).ToList(), f.LastTriageUtc);
     }
 
+    /// <summary>Another process's look at one item (the --whence verb): read only, never renames a file it can't parse.</summary>
+    public static Item? Peek(string path)
+    {
+        try
+        {
+            var f = JsonSerializer.Deserialize<StateFile>(File.ReadAllText(StatePath), Json);
+            return f?.Items.FirstOrDefault(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception e) when (e is IOException or JsonException or UnauthorizedAccessException) { return null; }
+    }
+
     /// <summary>Atomic: .tmp → flush → File.Replace with .bak, so a kill during the write leaves a readable file.</summary>
     public static void Save(string path, Snapshot s) =>
         AtomicFile.WriteAllText(path, JsonSerializer.Serialize(new StateFile(1, s.LastTriageUtc, [.. s.Items]), Json));

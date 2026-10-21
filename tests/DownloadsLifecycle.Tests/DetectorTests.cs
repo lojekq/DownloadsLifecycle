@@ -85,30 +85,30 @@ public class DetectorTests
         // Explorer "Extract all": <name>\ as is → 100 %
         var full = Zip(dir, "dl-test-full.zip", files);
         foreach (var (e, t) in files) Put(Path.Combine(dir, "dl-test-full", e), t);
-        Assert.AreEqual((100, "dl-test-full"), ZipCoverage.Check(full));
+        Assert.AreEqual((100, "dl-test-full"), Archives.Check(full));
 
         // one file removed → 98 %, two → 96 % (below the threshold)
         File.Delete(Path.Combine(dir, "dl-test-full", "f0.txt"));
-        Assert.AreEqual(98, ZipCoverage.Check(full)!.Value.Percent);
+        Assert.AreEqual(98, Archives.Check(full)!.Value.Percent);
         File.Delete(Path.Combine(dir, "dl-test-full", "f1.txt"));
-        Assert.IsLessThan(ZipCoverage.Threshold, ZipCoverage.Check(full)!.Value.Percent);
+        Assert.IsLessThan(Archives.Threshold, Archives.Check(full)!.Value.Percent);
 
         // one root folder: name\name\… (Explorer) and name\… with the root dropped (7-Zip "Extract to name\")
         var rooted = files.Select(f => ($"dl-test-root/{f.Item1}", f.Item2)).ToArray();
         var root = Zip(dir, "dl-test-root.zip", rooted);
         foreach (var (e, t) in files) Put(Path.Combine(dir, "dl-test-root", "dl-test-root", e), t);
-        Assert.AreEqual(100, ZipCoverage.Check(root)!.Value.Percent);
+        Assert.AreEqual(100, Archives.Check(root)!.Value.Percent);
         var other = Zip(dir, "dl-test-other.zip", files.Select(f => ($"inner/{f.Item1}", f.Item2)).ToArray());
         foreach (var (e, t) in files) Put(Path.Combine(dir, "dl-test-other", e), t);
-        Assert.AreEqual(100, ZipCoverage.Check(other)!.Value.Percent);
+        Assert.AreEqual(100, Archives.Check(other)!.Value.Percent);
 
         // same names, other sizes → not extracted from this archive
         var sizes = Zip(dir, "dl-test-sizes.zip", files);
         foreach (var (e, t) in files) Put(Path.Combine(dir, "dl-test-sizes", e), t + "!");
-        Assert.AreEqual(0, ZipCoverage.Check(sizes)!.Value.Percent);
+        Assert.AreEqual(0, Archives.Check(sizes)!.Value.Percent);
 
         // nothing next to it
-        Assert.AreEqual(0, ZipCoverage.Check(Zip(dir, "dl-test-lonely.zip", files))?.Percent ?? 0);
+        Assert.AreEqual(0, Archives.Check(Zip(dir, "dl-test-lonely.zip", files))?.Percent ?? 0);
         Directory.Delete(dir, true);
     }
 

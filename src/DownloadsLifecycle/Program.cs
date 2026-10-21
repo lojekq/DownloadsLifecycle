@@ -9,6 +9,7 @@ public static class Program
     internal static readonly Dictionary<string, Func<string[], int>> Verbs = new()
     {
         ["--ttl"] = Features.TtlPipe.Verb, // Explorer menu: --ttl 7d "path"
+        ["--whence"] = Features.Whence.Verb, // Explorer menu: "Where is it from?"
     };
 
     [STAThread]

@@ -26,6 +26,18 @@
             </ui:CardControl.Header>
             <ui:Button Content="{l:T Settings.Folder.Open}" Click="OpenFolder" />
         </ui:CardControl>
+        <!-- v1.0: extra watched folders -->
+        <ItemsControl x:Name="ExtraList" />
+        <WrapPanel Margin="0,4,0,0">
+            <ui:Button Content="{l:T Folders.Add}" Icon="{ui:SymbolIcon FolderAdd24}" Click="AddFolder" Margin="0,0,8,0" />
+            <ui:Button x:Name="TelegramButton" Content="{l:T Folders.Telegram}" Click="AddTelegram" Visibility="Collapsed" />
+        </WrapPanel>
+        <ui:InfoBar x:Name="StorageSenseBar" Severity="Warning" IsClosable="False" Margin="0,8,0,0" Title="{l:T StorageSense.Title}" />
+
+        <ui:TextBlock Text="{l:T SiteRules.Title}" Style="{StaticResource Head}" />
+        <ui:TextBlock Text="{l:T SiteRules.Note}" Style="{StaticResource Note}" Margin="0,0,0,8" />
+        <ItemsControl x:Name="RuleList" />
+        <ui:Button Content="{l:T SiteRules.Add}" Icon="{ui:SymbolIcon Add24}" Click="AddRule" Margin="0,4,0,0" />
 
         <ui:TextBlock Text="{l:T Settings.Rules}" Style="{StaticResource Head}" />
         <ui:CardControl Icon="{ui:SymbolIcon CalendarClock24}" Margin="0,0,0,4">
@@ -45,6 +57,33 @@
                 </StackPanel>
             </ui:CardControl.Header>
             <ui:ToggleSwitch x:Name="DuplicatesSwitch" AutomationProperties.Name="{l:T Rules.Duplicates}" />
+        </ui:CardControl>
+        <ui:CardControl Icon="{ui:SymbolIcon AppGeneric24}" Margin="0,0,0,4">
+            <ui:CardControl.Header>
+                <StackPanel>
+                    <ui:TextBlock Text="{l:T Rules.Installers}" />
+                    <ui:TextBlock x:Name="InstallersNote" Style="{StaticResource Note}" />
+                </StackPanel>
+            </ui:CardControl.Header>
+            <ui:ToggleSwitch x:Name="InstallersSwitch" AutomationProperties.Name="{l:T Rules.Installers}" />
+        </ui:CardControl>
+        <ui:CardControl Icon="{ui:SymbolIcon FolderZip24}" Margin="0,0,0,4">
+            <ui:CardControl.Header>
+                <StackPanel>
+                    <ui:TextBlock Text="{l:T Rules.Archives}" />
+                    <ui:TextBlock x:Name="ArchivesNote" Style="{StaticResource Note}" />
+                </StackPanel>
+            </ui:CardControl.Header>
+            <ui:ToggleSwitch x:Name="ArchivesSwitch" AutomationProperties.Name="{l:T Rules.Archives}" />
+        </ui:CardControl>
+        <ui:CardControl Icon="{ui:SymbolIcon CalendarClock24}" Margin="0,0,0,4">
+            <ui:CardControl.Header>
+                <StackPanel>
+                    <ui:TextBlock Text="{l:T Rules.ExactDays}" />
+                    <ui:TextBlock Text="{l:T Rules.ExactDays.Note}" Style="{StaticResource Note}" />
+                </StackPanel>
+            </ui:CardControl.Header>
+            <ui:NumberBox x:Name="ExactDaysBox" AutomationProperties.Name="{l:T Rules.ExactDays}" Minimum="1" Maximum="365" MaxDecimalPlaces="0" Width="130" ClearButtonEnabled="False" />
         </ui:CardControl>
 
         <ui:TextBlock Text="{l:T Settings.Safety}" Style="{StaticResource Head}" />
