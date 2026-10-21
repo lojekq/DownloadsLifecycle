@@ -1,9 +1,9 @@
 <div align="center">
 <img src="docs/icon.png" width="96" alt="">
 
-# DownloadsLifecycle
+# Downloads Lifecycle
 
-**Skeleton for small Windows tray apps: one exe, RU/EN, light and dark, releases from CI.**
+**Downloads as an inbox: every file knows its site, leftovers go safely to the Recycle Bin.**
 
 **English** · [Русский](README.ru.md)
 
@@ -14,35 +14,43 @@
 [![License](https://img.shields.io/github/license/lojekq/DownloadsLifecycle)](LICENSE)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/main-dark-en.png">
-  <img src="docs/main-light-en.png" width="820" alt="DownloadsLifecycle main window">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/inbox-dark-en.png">
+  <img src="docs/inbox-light-en.png" width="820" alt="Downloads Lifecycle inbox with cleanup suggestions">
 </picture>
 </div>
 
-
 ## Why
 
-Every small Windows utility needs the same boring parts: a tray icon, settings, autostart, two languages, a crash log and a release with checksums.
-DownloadsLifecycle has them done once, so an app only adds its own pages.
+The Downloads folder grows forever: installers you ran months ago, archives you already extracted, `invoice (1).pdf` next to `invoice.pdf`.
+Downloads Lifecycle turns it into an inbox: it remembers where each file came from, spots what is no longer needed and lets you clear it in one go.
+Nothing is ever deleted for good: every file goes to the Recycle Bin, and every action is in the journal.
 
 ## Features
 
-- **Tray first** — left click opens the window, the cross hides it, Exit is in the tray menu.
-- **One exe** — no installer and no admin rights; a Start menu shortcut and autostart are switches in Settings.
-- **English and Russian, light and dark** — follows Windows or your choice.
-- **Honest updates** — once a day it asks GitHub about a new release, shows a note and downloads nothing.
-- **Crash log** — if it fails, it stops and shows where the log is; nothing is sent anywhere.
+- **Every file shows the site it came from** — search and group by site, with the full page and file address one click away.
+- **Leftovers are spotted for you** — installers of programs you already have, archives you already extracted, `file (1).pdf` duplicates.
+- **Lifetime** — right-click → "Lifetime → 7 days", and the file goes to the Recycle Bin when its time is up.
+- **One daily screen** — new downloads and suggestions in one place: Keep, Move, Let go or Lifetime, with keys K / M / Del / T.
+- **Safe by design** — Recycle Bin only, 8 s to undo, every action logged, both auto-rules are off until you turn them on.
+- **100 % local** — no admin rights, no telemetry, no browser history reading.
 
 ## See it in action
 
-![DownloadsLifecycle demo](docs/demo-en.gif)
+![Downloads Lifecycle demo](docs/demo-en.gif)
 
 ## Screenshots
 
 | | Light | Dark |
 |---|---|---|
-| Settings | ![Settings, light](docs/settings-light-en.png) | ![Settings, dark](docs/settings-dark-en.png) |
-| About | ![About, light](docs/about-light-en.png) | ![About, dark](docs/about-dark-en.png) |
+| All files, grouped by site | ![All files, light](docs/files-light-en.png) | ![All files, dark](docs/files-dark-en.png) |
+| Journal | ![Journal, light](docs/journal-light-en.png) | ![Journal, dark](docs/journal-dark-en.png) |
+| Rules and safety | ![Rules, light](docs/rules-light-en.png) | ![Rules, dark](docs/rules-dark-en.png) |
+
+## How it works
+
+When a browser saves a file, Windows attaches a hidden Mark-of-the-Web stream (`Zone.Identifier`) with the page and file address.
+Downloads Lifecycle only reads it, once, when the file appears, so the source survives "Unblock". Installers are matched against the list of installed programs
+(an `.msi` exactly by its ProductCode), `.zip` archives against the files next to them, duplicates by SHA-256. All of it happens on your PC.
 
 ## Download
 
@@ -54,20 +62,32 @@ Requirements: Windows 11 x64. Windows 10 22H2 should work but is not tested.
 
 ## First run
 
-Put the exe into a permanent folder first, for example `%LOCALAPPDATA%\Programs\DownloadsLifecycle\`: autostart and the shortcut point to it.
-On the first start Windows may show a SmartScreen warning (see FAQ). The app then lives in the tray; turn on **Start with Windows** in Settings.
+Put the exe into `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` first: from there it adds the right-click menu and the Start menu shortcut by itself.
+On the first start Windows may show a SmartScreen warning (see FAQ). The first screen shows how many files are there and offers the two auto-rules, both off.
+The app then lives in the tray; turn on **Start with Windows** in Settings to get the daily reminder.
 
 ## Settings
 
 | Setting | Default | What it does |
 |---|---|---|
-| Language | Windows language | English or Russian, applied after a restart |
-| Theme | Windows theme | Light or dark |
-| Start with Windows | off | Starts minimized to the tray |
-| Start menu shortcut | on when the exe is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` | A shortcut in the Start menu |
-| Check for updates | on | Once a day asks GitHub about a new release |
+| Lifetime over → Recycle Bin | off | Files whose lifetime you set yourself go to the Recycle Bin when it ends |
+| Exact copies → Recycle Bin | off | Only `file (1).pdf` / `file - Copy.pdf` with the same contents as the original; the original stays |
+| Grace period | 24 h | The duplicates rule never touches younger files |
+| Size limit for rules | 4 GB | Bigger files are never let go by a rule, only by you |
+| Ask when more lifetimes end at once than | 20 | After a holiday they wait in the inbox for your OK |
+| Daily reminder | on, 19:00 | "Inbox: 12 files, 3.4 GB to clean"; not during a fullscreen game or presentation |
+| "Lifetime" in the right-click menu | on when the exe is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\` | In Windows 11 it is under **Show more options** (Shift+F10) |
+| Language, theme, Start with Windows, Start menu shortcut, updates | Windows / off / on | The usual |
 
-Settings and logs live in `%APPDATA%\DownloadsLifecycle`.
+Settings, the index (`state.json`) and the journal (`journal.jsonl`) live in `%APPDATA%\DownloadsLifecycle`.
+
+## Safety
+
+- Only the Recycle Bin, never a permanent delete. If a file cannot go there (too big, a network drive), Windows asks first; removable and network drives are not touched at all.
+- Before every action the file is checked again: same file, same size and date, not open in another program. Anything else cancels the action.
+- An `.exe` that matches no installed program is never offered: it may be a portable app.
+- Moving to another drive copies, verifies and only then sends the original to the Recycle Bin; moves can be returned from the journal.
+- Rules wait 10 minutes after start, can be paused from the tray, and skip files bigger than the limit.
 
 ## FAQ
 
@@ -80,19 +100,32 @@ Smart App Control, if it is on, blocks unsigned files with no way to allow one; 
 
 <details><summary>My antivirus flags it</summary>
 
-It is a false positive: the app has no installer, no packer and no obfuscation. Please report it to your antivirus vendor
-and open an issue with the detection name and the SHA256 of the file.
+It is a false positive: the app has no installer, no packer and no obfuscation; it only moves files to the Recycle Bin when you ask.
+Please report it to your antivirus vendor and open an issue with the detection name and the SHA256 of the file.
+</details>
+
+<details><summary>I don't see "Lifetime" when I right-click a file</summary>
+
+Windows 11 shows menu items of classic apps under **Show more options** (or Shift+F10). The item appears by itself only when the exe
+is in `%LOCALAPPDATA%\Programs\DownloadsLifecycle\`; otherwise turn it on in Settings. Lifetime works for files in Downloads only.
+</details>
+
+<details><summary>Why is the source "unknown"?</summary>
+
+The site is known only if the browser wrote Mark-of-the-Web: private/incognito windows, Telegram, files copied from a USB stick or
+a non-NTFS drive, and files unblocked before the app first saw them have none. Everything else still works for them.
 </details>
 
 <details><summary>How do I uninstall?</summary>
 
-About → **Remove data and autostart**, then delete the exe.
+About → **Remove data and autostart** (it also removes the right-click menu), then delete the exe.
 </details>
 
 ## Privacy
 
 No telemetry. The only network request is the update check: `GET https://api.github.com/repos/lojekq/DownloadsLifecycle/releases/latest` once a day; turn it off in Settings.
-Logs contain no window titles, paths or other personal data.
+Locally the app reads the top level of Downloads, the `Zone.Identifier` streams of those files, the list of installed programs and `.msi` files (read-only).
+It writes only to `%APPDATA%\DownloadsLifecycle` and its own right-click menu keys; logs contain no file names, paths or URLs.
 
 ## Build from source
 
@@ -100,9 +133,11 @@ Logs contain no window titles, paths or other personal data.
 winget install Microsoft.DotNet.SDK.10
 git clone https://github.com/lojekq/DownloadsLifecycle
 cd DownloadsLifecycle
-dotnet run --project src/DownloadsLifecycle
+dotnet run --project src/DownloadsLifecycle -- --watch-dir C:\Demo\Downloads
 dotnet test
 ```
+
+A Debug build never touches your real Downloads: it watches `C:\Demo\Downloads` or the folder given with `--watch-dir`.
 
 ## License
 

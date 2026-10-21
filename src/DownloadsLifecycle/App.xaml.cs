@@ -73,7 +73,9 @@ public partial class App : Application
     public static void ShowMain(string? page)
     {
         if (window is null) return;
+        var wasHidden = !window.IsVisible;
         window.Show();
+        if (wasHidden) Lifecycle.ToCursorMonitor(window);
         if (window.WindowState == WindowState.Minimized) window.WindowState = WindowState.Normal;
         window.Activate();
         if (page is not null) window.Navigate(page);

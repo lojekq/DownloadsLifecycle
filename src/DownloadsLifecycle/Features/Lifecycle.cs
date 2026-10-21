@@ -2,7 +2,11 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using H.NotifyIcon;
+using Windows.Win32;
+using Windows.Win32.Foundation;
+using Windows.Win32.UI.WindowsAndMessaging;
 using DownloadsLifecycle.Shell;
 
 namespace DownloadsLifecycle.Features;
@@ -62,6 +66,21 @@ public static class Lifecycle
         // ponytail: the frozen Shell/Tray has no tooltip setter, so the private icon is reached by reflection; add Tray.ToolTip if a second app needs it
         if (typeof(Tray).GetField("icon", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null) is TaskbarIcon icon)
             icon.ToolTipText = count > 0 ? string.Format(Loc.T("Tray.Tooltip"), count, Fmt.Size(bytes)) : AppInfo.DisplayName;
+    }
+
+    /// <summary>
+    /// Opened from the tray, the window comes up centred on the monitor with the cursor (08 §8) unless it is already there.
+    /// Physical pixels via SetWindowPos: WPF then rescales itself for that monitor's DPI.
+    /// </summary>
+    public static void ToCursorMonitor(Window w)
+    {
+        if (Args.Current.Screenshot is not null || Args.Current.Autoplay || !PInvoke.GetCursorPos(out var p)) return;
+        if (Monitors.At(new(p.X, p.Y), Monitors.Snapshot()) is not { } m) return;
+        var hwnd = new HWND(new WindowInteropHelper(w).Handle);
+        if (!PInvoke.GetWindowRect(hwnd, out var r) || m.Bounds.Contains((r.left + r.right) / 2, (r.top + r.bottom) / 2)) return;
+        int width = (int)((w.ActualWidth > 0 ? w.ActualWidth : w.Width) * m.Dpi / 96), height = (int)((w.ActualHeight > 0 ? w.ActualHeight : w.Height) * m.Dpi / 96);
+        PInvoke.SetWindowPos(hwnd, default, m.Work.Left + Math.Max(0, (m.Work.Width - width) / 2), m.Work.Top + Math.Max(0, (m.Work.Height - height) / 2), 0, 0,
+            SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOZORDER | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
     }
 
     /// <summary>Inbox size, to-clean count and bytes.</summary>

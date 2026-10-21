@@ -55,3 +55,6 @@ MsiRecordGetString
 MsiCloseHandle
 MsiQueryProductState
 MsiEnumRelatedProducts
+GetCursorPos
+SetWindowPos
+GetWindowRect

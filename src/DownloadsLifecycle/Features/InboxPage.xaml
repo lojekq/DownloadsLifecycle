@@ -25,7 +25,7 @@
                         <ui:TextBlock VerticalAlignment="Center" FontTypography="Caption" Appearance="Secondary" Margin="0,0,10,0">
                             <Run Text="{Binding SiteText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding SizeText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding AgeText, Mode=OneWay}" />
                         </ui:TextBlock>
-                        <Border x:Name="BadgeBox" HorizontalAlignment="Left" CornerRadius="4" Padding="6,1"
+                        <Border x:Name="BadgeBox" HorizontalAlignment="Left" CornerRadius="4" Padding="6,1" ToolTip="{Binding Badge}"
                                 Background="{DynamicResource SystemFillColorCautionBackgroundBrush}">
                             <ui:TextBlock Text="{Binding Badge}" FontTypography="Caption" TextTrimming="CharacterEllipsis"
                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />

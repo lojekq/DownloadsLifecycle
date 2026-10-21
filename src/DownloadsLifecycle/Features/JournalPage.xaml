@@ -39,7 +39,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="{l:T Journal.Reason}" Binding="{Binding Reason}" Width="*" MinWidth="160" />
+                <DataGridTemplateColumn Header="{l:T Journal.Reason}" Width="*" MinWidth="160">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate DataType="{x:Type f:JournalRow}">
+                            <TextBlock Text="{Binding Reason}" ToolTip="{Binding Reason}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Header="{l:T Journal.By}" Binding="{Binding By}" Width="125" />
                 <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>

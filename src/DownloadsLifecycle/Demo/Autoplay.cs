@@ -1,3 +1,5 @@
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 using DownloadsLifecycle.Features;
 
@@ -9,6 +11,8 @@ public static class Autoplay
     public static void Start(MainWindow w)
     {
         Actions.UndoWindow = TimeSpan.FromSeconds(3); // the GIF is 8 s: the bar has to go within it
+        // wherever the real cursor rests, no tooltip pops up in the recording
+        EventManager.RegisterClassHandler(typeof(FrameworkElement), FrameworkElement.ToolTipOpeningEvent, new ToolTipEventHandler((_, e) => e.Handled = true));
         // Seconds after the window is on screen; gif.ps1 starts recording when --rect-file appears, ffmpeg needs ~1 s
         (double At, Action Do)[] steps =
         [
