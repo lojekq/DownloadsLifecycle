@@ -21,6 +21,9 @@ public static class Program
             catch (Exception e) { Log.Error($"{args[0]} failed", e); return 1; }
         }
         Args.Current = Args.Parse(args);
+        // Here, not in the async OnStartup: the UI culture is AsyncLocal and would fall back to Windows' after its first await
+        Settings.Load();
+        Loc.Apply(Settings.Current.Language);
         var app = new App();
         app.InitializeComponent();
         return app.Run();
