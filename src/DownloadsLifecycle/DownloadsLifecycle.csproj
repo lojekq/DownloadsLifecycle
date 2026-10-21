@@ -18,6 +18,8 @@
     <Copyright>© 2026 lojekq · MIT</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
     <SatelliteResourceLanguages>en;ru</SatelliteResourceLanguages>
+    <!-- Installer tests: -p:Sandbox=true gives a Release single-file that still watches C:\Demo\Downloads, never the real Downloads -->
+    <DefineConstants Condition="'$(Sandbox)' == 'true'">$(DefineConstants);SANDBOX</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
