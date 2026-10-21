@@ -47,7 +47,7 @@ public static class Engine
         StartedUtc = DateTime.UtcNow;
         Snapshot? saved = null;
         try { saved = Index.Load(Index.StatePath); }
-        catch (Exception e) { Log.Error("state.json not readable", e); } // locked: start empty this time
+        catch (Exception e) { Log.Error("state.json not readable: " + Fmt.Err(e)); } // locked: start empty this time
         FirstRun = saved is null;
         index = Index.From(saved ?? new([], DateTime.UtcNow)); // first run: what is already there is not "new"
         index.Dirty = FirstRun;
@@ -87,7 +87,7 @@ public static class Engine
         var joined = thread.Join(TimeSpan.FromSeconds(5));
         thread = null;
         try { Index.Save(Index.StatePath, joined ? index.Snapshot() : Current); }
-        catch (Exception e) { Log.Error("state.json not saved on exit", e); }
+        catch (Exception e) { Log.Error("state.json not saved on exit: " + Fmt.Err(e)); }
     }
 
     public static void Post(Action job)
@@ -122,7 +122,7 @@ public static class Engine
                 if (now >= saveDue) Save();
             }
             catch (OperationCanceledException) { break; }
-            catch (Exception e) { Log.Error("worker job failed", e); } // one bad file never stops the worker
+            catch (Exception e) { Log.Error("worker job failed: " + Fmt.Err(e)); } // one bad file never stops the worker
         }
     }
 
@@ -141,7 +141,7 @@ public static class Engine
     {
         saveDue = DateTime.MaxValue;
         try { Index.Save(Index.StatePath, index.Snapshot()); }
-        catch (Exception e) { Log.Error("state.json not saved", e); saveDue = DateTime.UtcNow.AddSeconds(30); }
+        catch (Exception e) { Log.Error("state.json not saved: " + Fmt.Err(e)); saveDue = DateTime.UtcNow.AddSeconds(30); }
     }
 
     /// <summary>Duplicates first (a hash is proof), then installers, then extracted zips. Installer and zip checks are cached per tick.</summary>
@@ -154,7 +154,9 @@ public static class Engine
             var zip = Path.GetExtension(i.Path).Equals(".zip", StringComparison.OrdinalIgnoreCase);
             if (s is null && !i.Kept && !i.IsDir && (i.Kind == Kind.Installer || zip))
             {
-                var mark = $"{i.Stamp}/{generation}";
+                // a zip is looked at again when the folder it was extracted to changes, or at the 15 min tick for deeper changes
+                var folder = zip ? index.ByPath(Path.Combine(Path.GetDirectoryName(i.Path)!, Path.GetFileNameWithoutExtension(i.Path)))?.Stamp : null;
+                var mark = $"{i.Stamp}/{generation}/{folder}";
                 if (Checked.GetValueOrDefault(i.Key) == mark) s = i.Suggestion is { Type: not "duplicate" } ? i.Suggestion : null;
                 else
                 {

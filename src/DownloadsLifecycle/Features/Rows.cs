@@ -31,6 +31,9 @@ public sealed class Row(Item item, DateTime nowUtc)
     public string ZoneText => Item.Src?.Zone is { } z ? $"{z} · {Loc.T(z switch { 3 => "Zone.Internet", 4 => "Zone.Restricted", 1 => "Zone.Intranet", 2 => "Zone.Trusted", _ => "Zone.Local" })}" : "—";
     public string HashText => Item.Sha256 ?? "—";
 
+    /// <summary>What screen readers and UI automation call the row.</summary>
+    public override string ToString() => Badge is null ? Name : $"{Name}, {Badge}";
+
     public string Status { get; } =
         item.Kept ? Loc.T("Status.Kept")
         : item.TtlUtc is { } t ? string.Format(Loc.T("Status.Until"), t.ToLocalTime().ToString(t - nowUtc < TimeSpan.FromDays(1) ? "t" : "d"))

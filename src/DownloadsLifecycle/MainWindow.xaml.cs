@@ -12,6 +12,10 @@ public partial class MainWindow
         ElevatedBar.IsOpen = AppInfo.IsElevated;
         Loaded += (_, _) => { if (Nav.SelectedItem is null) Navigate("inbox"); };
         UndoButton.Click += (_, _) => Actions.Undo();
+        // "2 h ago" and "ends in 5 min" move on even when nothing on disk changes
+        var minute = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMinutes(1) };
+        minute.Tick += (_, _) => { if (IsVisible) Engine.Refresh(); };
+        minute.Start();
         Actions.UndoChanged += (count, bytes) =>
         {
             UndoBar.Visibility = count > 0 ? Visibility.Visible : Visibility.Collapsed;

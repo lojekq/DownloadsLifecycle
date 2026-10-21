@@ -17,6 +17,8 @@ public sealed class JournalRow(JournalEntry e)
     /// <summary>A move can go back while the file is still where it went (and it wasn't itself a return).</summary>
     public bool CanReturn { get; } = e.Op == "move" && e.Reason != "return" && e.To is not null && (Args.Current.Demo || Path.Exists(e.To));
     public bool InBin => Entry.Op == "recycle";
+
+    public override string ToString() => $"{Action} {Name}";
 }
 
 /// <summary>What happened, when, why and by whom (the user or a rule). Moves can be returned; recycled files are in the Recycle Bin.</summary>

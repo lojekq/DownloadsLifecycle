@@ -35,7 +35,7 @@
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
                     <ui:Button Content="{l:T Inbox.Keep}" Click="KeepClick" Margin="0,0,4,0" Padding="10,4" ToolTip="K" />
                     <ui:Button Content="{l:T Inbox.Move}" Click="MoveClick" Margin="0,0,4,0" Padding="10,4" ToolTip="M" />
-                    <ui:Button Click="TtlClick" Margin="0,0,4,0" Padding="10,4" ToolTip="T">
+                    <ui:Button Click="TtlClick" Margin="0,0,4,0" Padding="10,4" ToolTip="T" AutomationProperties.Name="{l:T Inbox.Ttl}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{l:T Inbox.Ttl}" />
                             <ui:SymbolIcon Symbol="ChevronDown16" FontSize="12" Margin="4,0,0,0" />

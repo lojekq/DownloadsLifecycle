@@ -47,7 +47,7 @@
                             <Grid>
                                 <ui:Button Content="{l:T Journal.Return}" Padding="8,2" Click="ReturnClick"
                                            Visibility="{Binding CanReturn, Converter={StaticResource Vis}}" />
-                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}"
+                                <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}" AutomationProperties.Name="{l:T Journal.ShowInBin}"
                                            Visibility="{Binding InBin, Converter={StaticResource Vis}}" />
                             </Grid>
                         </DataTemplate>

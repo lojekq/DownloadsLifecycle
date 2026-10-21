@@ -76,7 +76,7 @@ public sealed class Index
                     File.AppendAllText(JournalPath, JsonSerializer.Serialize(e, Json) + "\n");
                 }
             }
-            catch (Exception x) { Log.Error("journal append", x); }
+            catch (Exception x) { Log.Error("journal append: " + Fmt.Err(x)); }
         Journaled?.Invoke();
     }
 
@@ -105,7 +105,7 @@ public sealed class Index
                 if (keep.Count < lines.Length) AtomicFile.WriteAllText(JournalPath, string.Concat(keep.Select(l => l + "\n")));
             }
         }
-        catch (Exception e) { Log.Error("journal rotation", e); }
+        catch (Exception e) { Log.Error("journal rotation: " + Fmt.Err(e)); }
     }
 
     static JournalEntry? ParseLine(string line)

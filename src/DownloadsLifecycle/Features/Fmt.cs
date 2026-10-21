@@ -81,4 +81,7 @@ public static class Fmt
         var t = Loc.T("Reason." + code);
         return t.StartsWith('[') ? reason : string.Format(t, arg);
     }
+
+    /// <summary>An exception for the log without its message: IO messages carry paths, and logs go to public issues (00-shared §2.3).</summary>
+    public static string Err(Exception e) => $"{e.GetType().Name} (0x{e.HResult:X8}){Environment.NewLine}{e.StackTrace}";
 }

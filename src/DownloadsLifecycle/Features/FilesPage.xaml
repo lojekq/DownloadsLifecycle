@@ -95,12 +95,12 @@
                         </WrapPanel>
                         <ui:TextBlock Text="{l:T Files.Referrer}" Style="{StaticResource Label}" />
                         <DockPanel>
-                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyReferrer" ToolTip="{l:T Files.Copy}" VerticalAlignment="Top" />
+                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyReferrer" ToolTip="{l:T Files.Copy}" AutomationProperties.Name="{l:T Files.Copy}" VerticalAlignment="Top" />
                             <ui:TextBlock Text="{Binding ReferrerText}" TextWrapping="Wrap" FontTypography="Caption" />
                         </DockPanel>
                         <ui:TextBlock Text="{l:T Files.Url}" Style="{StaticResource Label}" />
                         <DockPanel>
-                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyUrl" ToolTip="{l:T Files.Copy}" VerticalAlignment="Top" />
+                            <ui:Button DockPanel.Dock="Right" Icon="{ui:SymbolIcon Copy24}" Padding="5" Margin="6,0,0,0" Click="CopyUrl" ToolTip="{l:T Files.Copy}" AutomationProperties.Name="{l:T Files.Copy}" VerticalAlignment="Top" />
                             <ui:TextBlock Text="{Binding UrlText}" TextWrapping="Wrap" FontTypography="Caption" />
                         </DockPanel>
                         <ui:TextBlock Text="{l:T Files.Zone}" Style="{StaticResource Label}" />

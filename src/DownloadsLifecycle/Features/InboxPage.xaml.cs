@@ -100,6 +100,8 @@ public partial class InboxPage
             },
             PrimaryButtonText = Loc.T("Inbox.Release"),
             CloseButtonText = Loc.T("Confirm.Cancel"),
+            Owner = Window.GetWindow(this), // over the app, not on the primary monitor
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
         if (await box.ShowDialogAsync() == Wpf.Ui.Controls.MessageBoxResult.Primary) Release(items);
     }

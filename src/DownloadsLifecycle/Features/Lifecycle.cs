@@ -18,6 +18,10 @@ public static class Lifecycle
         App.RemoveData = () => { ExplorerMenu.Unregister(); return null; };
         if (Args.Current.Demo) return; // DemoData fills the snapshot; nothing runs, nothing is written
         Engine.Start(app.Dispatcher);
+#if DEBUG
+        if (Args.Current.Unknown.Contains("--throw")) // 00-shared §8 p.4: the crash log, checked in Debug only
+            app.Dispatcher.BeginInvoke(new Action(() => throw new InvalidOperationException("test crash (--throw)")), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+#endif
         TtlPipe.Serve();
         if (Install.IsInstalled && Settings.Current.ContextMenu) ExplorerMenu.Ensure(); // Debug builds: only by the switch
         App.Exiting += () =>

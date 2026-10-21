@@ -154,7 +154,7 @@ public static class Actions
             }
             catch (Exception e) when (e is IOException or UnauthorizedAccessException or NotSupportedException)
             {
-                Log.Warn("move failed", e);
+                Log.Warn("move failed: " + Fmt.Err(e));
                 errors.Add($"{i.Name}: {e.Message}");
             }
         }
@@ -172,7 +172,7 @@ public static class Actions
         }
         catch (Exception x) when (x is IOException or UnauthorizedAccessException or NotSupportedException)
         {
-            Log.Warn("return failed", x);
+            Log.Warn("return failed: " + Fmt.Err(x));
             Notice?.Invoke(x.Message);
         }
     }

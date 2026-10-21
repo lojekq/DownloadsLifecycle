@@ -35,7 +35,7 @@
                     <ui:TextBlock Text="{l:T Rules.Expired.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:ToggleSwitch x:Name="ExpiredSwitch" />
+            <ui:ToggleSwitch x:Name="ExpiredSwitch" AutomationProperties.Name="{l:T Rules.Expired}" />
         </ui:CardControl>
         <ui:CardControl Icon="{ui:SymbolIcon DocumentCopy24}" Margin="0,0,0,4">
             <ui:CardControl.Header>
@@ -44,7 +44,7 @@
                     <ui:TextBlock Text="{l:T Rules.Duplicates.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:ToggleSwitch x:Name="DuplicatesSwitch" />
+            <ui:ToggleSwitch x:Name="DuplicatesSwitch" AutomationProperties.Name="{l:T Rules.Duplicates}" />
         </ui:CardControl>
 
         <ui:TextBlock Text="{l:T Settings.Safety}" Style="{StaticResource Head}" />
@@ -55,7 +55,7 @@
                     <ui:TextBlock Text="{l:T Safety.Grace.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:NumberBox x:Name="GraceBox" Minimum="0" Maximum="720" MaxDecimalPlaces="0" Width="130" ClearButtonEnabled="False" />
+            <ui:NumberBox x:Name="GraceBox" AutomationProperties.Name="{l:T Safety.Grace}" Minimum="0" Maximum="720" MaxDecimalPlaces="0" Width="130" ClearButtonEnabled="False" />
         </ui:CardControl>
         <ui:CardControl Icon="{ui:SymbolIcon ShieldCheckmark24}" Margin="0,0,0,4">
             <ui:CardControl.Header>
@@ -64,7 +64,7 @@
                     <ui:TextBlock Text="{l:T Safety.MaxSize.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:NumberBox x:Name="MaxSizeBox" Minimum="0" Maximum="1024" MaxDecimalPlaces="1" Width="130" ClearButtonEnabled="False" />
+            <ui:NumberBox x:Name="MaxSizeBox" AutomationProperties.Name="{l:T Safety.MaxSize}" Minimum="0" Maximum="1024" MaxDecimalPlaces="1" Width="130" ClearButtonEnabled="False" />
         </ui:CardControl>
         <ui:CardControl Icon="{ui:SymbolIcon ShieldCheckmark24}" Margin="0,0,0,4">
             <ui:CardControl.Header>
@@ -73,7 +73,7 @@
                     <ui:TextBlock Text="{l:T Safety.Mass.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:NumberBox x:Name="MassBox" Minimum="1" Maximum="1000" MaxDecimalPlaces="0" Width="130" ClearButtonEnabled="False" />
+            <ui:NumberBox x:Name="MassBox" AutomationProperties.Name="{l:T Safety.Mass}" Minimum="1" Maximum="1000" MaxDecimalPlaces="0" Width="130" ClearButtonEnabled="False" />
         </ui:CardControl>
 
         <ui:TextBlock Text="{l:T Settings.Reminder}" Style="{StaticResource Head}" />
@@ -85,8 +85,8 @@
                 </StackPanel>
             </ui:CardControl.Header>
             <StackPanel Orientation="Horizontal">
-                <ComboBox x:Name="TimeBox" Width="100" Margin="0,0,12,0" />
-                <ui:ToggleSwitch x:Name="ReminderSwitch" />
+                <ComboBox x:Name="TimeBox" AutomationProperties.Name="{l:T Settings.Reminder.Daily}" Width="100" Margin="0,0,12,0" />
+                <ui:ToggleSwitch x:Name="ReminderSwitch" AutomationProperties.Name="{l:T Settings.Reminder.Daily}" />
             </StackPanel>
         </ui:CardControl>
 
@@ -98,7 +98,7 @@
                     <ui:TextBlock Text="{l:T Settings.Menu.Note}" Style="{StaticResource Note}" />
                 </StackPanel>
             </ui:CardControl.Header>
-            <ui:ToggleSwitch x:Name="MenuSwitch" />
+            <ui:ToggleSwitch x:Name="MenuSwitch" AutomationProperties.Name="{l:T Settings.Menu.Switch}" />
         </ui:CardControl>
     </StackPanel>
 </UserControl>
