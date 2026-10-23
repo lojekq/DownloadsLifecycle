@@ -7,9 +7,9 @@ using DownloadsLifecycle.Shell;
 namespace DownloadsLifecycle.Features;
 
 /// <summary>
-/// The watched folders. The main one: Release the real Downloads (FOLDERID_Downloads), Debug C:\Demo\Downloads or --watch-dir &lt;path&gt;,
-/// so a Debug build never touches the real Downloads (00-shared §9.4). Extra ones (Telegram Desktop…) come from Settings.
-/// --ttl-minutes (Debug, only under C:\Demo) turns days into minutes.
+/// The watched folders. The main one: the real Downloads (FOLDERID_Downloads); a dev instance (Debug, tests, --data-dir) and a -p:Sandbox=true
+/// build C:\Demo\Downloads or --watch-dir &lt;path&gt;, so they never touch the real Downloads (00-shared §9.4). Extra ones (Telegram Desktop…) come from Settings.
+/// --ttl-minutes (dev instances, only under C:\Demo) turns days into minutes.
 /// </summary>
 public static class Folder
 {
@@ -18,12 +18,15 @@ public static class Folder
     static string? path;
     public static string Path => path ??= Resolve(Args.Current.Unknown);
 
-    /// <summary>A lifetime "day" is a minute: Debug only, with the folder under C:\Demo, for the manual TTL check.</summary>
-    public static bool TtlMinutes =>
-#if DEBUG
-        Args.Current.Unknown.Contains("--ttl-minutes") && Paths.IsUnder(@"C:\Demo", Path);
+    /// <summary>A lifetime "day" is a minute: dev instances only, with the folder under C:\Demo, for the manual TTL check.</summary>
+    public static bool TtlMinutes => Dev && Args.Current.Unknown.Contains("--ttl-minutes") && Paths.IsUnder(@"C:\Demo", Path);
+
+    /// <summary>A dev instance (AppInfo.IsDev), or a Release single-file for installer tests (-p:Sandbox=true): never the real Downloads.</summary>
+    static bool Dev =>
+#if SANDBOX
+        true;
 #else
-        false;
+        AppInfo.IsDev;
 #endif
 
     public static TimeSpan Day => TtlMinutes ? TimeSpan.FromMinutes(1) : TimeSpan.FromDays(1);
@@ -31,29 +34,24 @@ public static class Folder
     internal static string Resolve(IReadOnlyList<string> unknown)
     {
         if (Args.Current.Demo) return @"C:\Users\demo\Downloads"; // shown in screenshots: never a real user name
-#if DEBUG || SANDBOX // SANDBOX: Release single-file for installer tests (-p:Sandbox=true)
+        if (!Dev) return Paths.Downloads;
         var i = unknown.ToList().IndexOf("--watch-dir");
         var dir = i >= 0 && i + 1 < unknown.Count ? System.IO.Path.GetFullPath(unknown[i + 1]) : Sandbox;
         Directory.CreateDirectory(dir);
         return dir;
-#else
-        return Paths.Downloads;
-#endif
     }
 
     /// <summary>The main folder first, then the extra ones that are still allowed and exist.</summary>
     public static IReadOnlyList<string> All =>
         [Path, .. Settings.Current.ExtraFolders.Where(f => Allowed(f) is null && Directory.Exists(f)).Distinct(StringComparer.OrdinalIgnoreCase)];
 
-    /// <summary>Why a folder can't be watched, or null. Never a drive root, a folder that holds the main one, or Windows; Debug only under C:\Demo.</summary>
+    /// <summary>Why a folder can't be watched, or null. Never a drive root, a folder that holds the main one, or Windows; dev instances only under C:\Demo.</summary>
     public static string? Allowed(string dir)
     {
         if (!System.IO.Path.IsPathFullyQualified(dir)) return "Folder.Bad";
         var full = System.IO.Path.GetFullPath(dir).TrimEnd('\\');
         if (full.Length <= 3 || Paths.IsUnder(full, Path) || Paths.IsUnder(Environment.GetFolderPath(Environment.SpecialFolder.Windows), full)) return "Folder.Bad";
-#if DEBUG
-        if (!Args.Current.Demo && !Paths.IsUnder(@"C:\Demo", full)) return "Folder.DebugOnlyDemo";
-#endif
+        if (Dev && !Args.Current.Demo && !Paths.IsUnder(@"C:\Demo", full)) return "Folder.DebugOnlyDemo";
         return null;
     }
 

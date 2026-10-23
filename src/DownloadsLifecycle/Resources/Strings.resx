@@ -222,7 +222,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Verdict.TooYoung" xml:space="preserve"><value>younger than the grace period</value></data>
   <data name="Verdict.TooBig" xml:space="preserve"><value>bigger than the size limit</value></data>
   <data name="Folder.Bad" xml:space="preserve"><value>This folder can't be watched: not a drive root, not a folder that holds Downloads, not Windows.</value></data>
-  <data name="Folder.DebugOnlyDemo" xml:space="preserve"><value>A Debug build watches folders under C:\Demo only.</value></data>
+  <data name="Folder.DebugOnlyDemo" xml:space="preserve"><value>A Debug or test build watches folders under C:\Demo only.</value></data>
   <data name="Folders.Add" xml:space="preserve"><value>Add a folder…</value></data>
   <data name="Folders.Telegram" xml:space="preserve"><value>Add Telegram Desktop downloads</value></data>
   <data name="Folders.Remove" xml:space="preserve"><value>Stop watching</value></data>

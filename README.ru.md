@@ -160,6 +160,8 @@ dotnet test
 ```
 
 Debug-сборка не трогает настоящие «Загрузки»: она следит за `C:\Demo\Downloads` или за папкой из `--watch-dir`.
+С установленной копией она тоже не встречается: свои данные в `%APPDATA%\DownloadsLifecycle-dev`, свой трей, pipe и пункт меню «(dev)».
+Release-сборка проверяется так же, с `--data-dir C:\Demo\dl-data`.
 
 ## Лицензия
 

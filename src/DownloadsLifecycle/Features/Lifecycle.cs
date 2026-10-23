@@ -33,7 +33,7 @@ public static class Lifecycle
             app.Dispatcher.BeginInvoke(new Action(() => throw new InvalidOperationException("test crash (--throw)")), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
 #endif
         TtlPipe.Serve();
-        if (Install.IsInstalled && Settings.Current.ContextMenu) ExplorerMenu.Ensure(); // Debug builds: only by the switch
+        if (Install.IsInstalled && Settings.Current.ContextMenu) ExplorerMenu.Ensure(); // dev instances: only by the switch, under their own "(dev)" keys
         App.Exiting += () =>
         {
             Actions.CancelPending();
@@ -71,7 +71,7 @@ public static class Lifecycle
         if (sortItem is not null) sortItem.Header = count > 0 ? $"{Loc.T("Tray.Sort")} ({count})" : Loc.T("Tray.Sort");
         // ponytail: the frozen Shell/Tray has no tooltip setter, so the private icon is reached by reflection; add Tray.ToolTip if a second app needs it
         if (typeof(Tray).GetField("icon", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null) is TaskbarIcon icon)
-            icon.ToolTipText = count > 0 ? string.Format(Loc.T("Tray.Tooltip"), count, Fmt.Size(bytes)) : AppInfo.DisplayName;
+            icon.ToolTipText = count > 0 ? string.Format(Loc.T("Tray.Tooltip"), count, Fmt.Size(bytes)) : AppInfo.Title;
     }
 
     /// <summary>

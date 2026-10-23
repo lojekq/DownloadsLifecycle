@@ -160,6 +160,8 @@ dotnet test
 ```
 
 A Debug build never touches your real Downloads: it watches `C:\Demo\Downloads` or the folder given with `--watch-dir`.
+It also lives apart from an installed copy: its own data in `%APPDATA%\DownloadsLifecycle-dev`, its own tray, pipe and "(dev)" right-click menu.
+A Release build is checked the same way with `--data-dir C:\Demo\dl-data`.
 
 ## License
 

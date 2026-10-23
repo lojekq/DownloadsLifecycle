@@ -14,7 +14,7 @@ namespace DownloadsLifecycle.Features;
 /// </summary>
 public static class TtlPipe
 {
-    const string Name = "lojekq.DownloadsLifecycle.ttl";
+    static readonly string Name = $"lojekq.{AppInfo.InstanceName}.ttl"; // a dev instance's verbs never reach the installed tray
     static readonly List<(TtlCommand Cmd, string Path)> Batch = [];
     static readonly CancellationTokenSource Stopping = new();
 
@@ -24,7 +24,7 @@ public static class TtlPipe
         if (args.Length < 2 || TtlCommand.Parse(args[0]) is null) return 2;
         var message = string.Join('\n', args.Select((a, i) => i == 0 ? a : Path.GetFullPath(a)));
         if (Send(message, 1000)) return 0;
-        using var starting = new Mutex(false, @$"Local\lojekq.{AppInfo.Name}.ttl-start"); // 100 processes, one tray start
+        using var starting = new Mutex(false, @$"Local\lojekq.{AppInfo.InstanceName}.ttl-start"); // 100 processes, one tray start
         try { starting.WaitOne(TimeSpan.FromSeconds(30)); } catch (AbandonedMutexException) { }
         try
         {

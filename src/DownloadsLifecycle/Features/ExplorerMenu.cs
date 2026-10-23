@@ -7,11 +7,13 @@ namespace DownloadsLifecycle.Features;
 /// Classic Explorer menu in HKCU: "Lifetime ▸ 1 day / 7 days / 30 days / Keep / Remove lifetime" for files and folders,
 /// and (v1.0) "Where is it from?" for files. Windows 11 shows them under "Show more options". Registered by itself only from
 /// %LOCALAPPDATA%\Programs\DownloadsLifecycle\ (and re-pointed when the exe moved there); otherwise only by the switch in Settings (00-shared §2.4).
+/// A dev instance has its own keys and "(dev)" labels (AppInfo.InstanceName): it never replaces or removes the installed copy's menu.
 /// </summary>
 public static class ExplorerMenu
 {
-    static readonly string[] Roots = [@"Software\Classes\*\shell\" + AppInfo.Name, @"Software\Classes\Directory\shell\" + AppInfo.Name];
-    const string WhenceKey = @"Software\Classes\*\shell\" + AppInfo.Name + ".Whence";
+    static readonly string[] Roots = [@"Software\Classes\*\shell\" + AppInfo.InstanceName, @"Software\Classes\Directory\shell\" + AppInfo.InstanceName];
+    static readonly string WhenceKey = @"Software\Classes\*\shell\" + AppInfo.InstanceName + ".Whence";
+    static string Label(string key) => Loc.T(key) + (AppInfo.IsDev ? " (dev)" : "");
     static readonly (string Arg, string Label)[] Commands = [("1d", "Menu.1d"), ("7d", "Menu.7d"), ("30d", "Menu.30d"), ("keep", "Menu.Keep"), ("clear", "Menu.Clear")];
 
     public static bool IsRegistered
@@ -29,7 +31,7 @@ public static class ExplorerMenu
         foreach (var root in Roots)
         {
             using var k = Registry.CurrentUser.CreateSubKey(root);
-            k.SetValue("MUIVerb", Loc.T("Menu.Lifetime"));
+            k.SetValue("MUIVerb", Label("Menu.Lifetime"));
             k.SetValue("SubCommands", "");
             k.SetValue("MultiSelectModel", "Player"); // one process per file, up to 100 files; the tray batches them
             k.SetValue("Icon", $"\"{AppInfo.ExePath}\",0");
@@ -44,7 +46,7 @@ public static class ExplorerMenu
         }
         using (var w = Registry.CurrentUser.CreateSubKey(WhenceKey))
         {
-            w.SetValue("MUIVerb", Loc.T("Menu.Whence"));
+            w.SetValue("MUIVerb", Label("Menu.Whence"));
             w.SetValue("MultiSelectModel", "Single");
             w.SetValue("Icon", $"\"{AppInfo.ExePath}\",0");
             using var cmd = w.CreateSubKey("command");
