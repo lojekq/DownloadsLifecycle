@@ -7,13 +7,13 @@ using DownloadsLifecycle.Shell;
 namespace DownloadsLifecycle.Features;
 
 /// <summary>
-/// Let go / move / return, on the UI thread (Shell operations need STA and an owner window). Every action re-checks the file first
-/// (<see cref="SafetyGate"/>) and goes into journal.jsonl. "Let go" waits 8 s for Undo; on exit unconfirmed ones are dropped, the file stays.
+/// Recycle / move / return, on the UI thread (Shell operations need STA and an owner window). Every action re-checks the file first
+/// (<see cref="SafetyGate"/>) and goes into journal.jsonl. "To Recycle Bin" waits 8 s for Undo; on exit unconfirmed ones are dropped, the file stays.
 /// </summary>
 public static class Actions
 {
-    static readonly Dictionary<string, Item> Pending = [];   // let go, still undoable
-    static readonly Dictionary<string, Item> Waiting = [];   // let go, but in use: retried every 30 s for an hour
+    static readonly Dictionary<string, Item> Pending = [];   // sent to the Bin, still undoable
+    static readonly Dictionary<string, Item> Waiting = [];   // sent to the Bin, but in use: retried every 30 s for an hour
     static readonly DispatcherTimer Retry = new() { Interval = TimeSpan.FromSeconds(30) };
     static DispatcherTimer? undo;
     static DateTime waitingSince;
@@ -32,7 +32,7 @@ public static class Actions
     static nint Owner => Application.Current?.MainWindow is { } w ? new WindowInteropHelper(w).Handle : 0;
     static Settings S => Settings.Current;
 
-    /// <summary>"Let go": into the Recycle Bin after the undo window. A new batch commits the previous one first.</summary>
+    /// <summary>"To Recycle Bin": into the Recycle Bin after the undo window. A new batch commits the previous one first.</summary>
     public static void Release(IEnumerable<Item> items)
     {
         Commit();
@@ -106,7 +106,7 @@ public static class Actions
         IReadOnlyList<UninstallEntry>? installed = null;
         foreach (var (i, rule) in plan)
         {
-            if (rule == "rule:duplicate" && !Engine.Current.Items.Any(k => k.Key != i.Key && k.Name == i.Suggestion?.Subject && k.Sha256 == i.Sha256 && File.Exists(k.Path)))
+            if (rule == "rule:duplicate" && !Engine.Current.Items.Any(k => k.Key != i.Key && k.Name == i.Suggestion?.Subject && Duplicates.SameContent(k, i) && File.Exists(k.Path)))
                 continue; // the copy that stays must still be there
             // exact-match rules (v1.0) look again right before: still installed by ProductCode, still extracted to the last file
             if (rule == "rule:installer" && Installers.Check(i, installed ??= UninstallEntries.List()) is not { Confidence: "exact", Why: "msi" }) continue;
@@ -203,7 +203,7 @@ public static class Actions
         Engine.MarkRuled(i.Key);
     }
 
-    /// <summary>v1.0 journal "Restore": a file let go goes back from the Recycle Bin to where it was.</summary>
+    /// <summary>v1.0 journal "Restore": a recycled file goes back from the Recycle Bin to where it was.</summary>
     public static void Restore(JournalEntry e)
     {
         if (Path.Exists(e.Path)) { Notice?.Invoke(Loc.T("Journal.RestoreTaken")); return; }

@@ -91,6 +91,29 @@ public class V1Tests
     }
 
     [TestMethod]
+    public void RecycleBinSeesAndRestoresOurFile()
+    {
+        // The real Recycle Bin, our own temp file only; it comes back out, so the Bin stays as it was
+        var dir = Directory.CreateTempSubdirectory("dl-test-").FullName;
+        var p = Path.Combine(dir, "dl-test-bin.txt");
+        File.WriteAllText(p, "x");
+        var t = DateTime.UtcNow;
+        Assert.IsTrue(Recycler.Recycle(p, 0));
+        try
+        {
+            var bin = RecycleBin.Contents();
+            Assert.IsNotNull(bin);
+            Assert.IsTrue(RecycleBin.Holds(bin, p, t)); // the Shell's deletion time is UTC: within two minutes, not a time zone off
+            Assert.IsFalse(RecycleBin.Holds(bin, p, t.AddHours(-1)));
+        }
+        finally
+        {
+            Assert.IsTrue(RecycleBin.Restore(p, t));
+            Directory.Delete(dir, recursive: true);
+        }
+    }
+
+    [TestMethod]
     public void FreedThisMonthCountsRecycledMinusRestored()
     {
         var now = new DateTime(2026, 10, 21, 12, 0, 0, DateTimeKind.Local);

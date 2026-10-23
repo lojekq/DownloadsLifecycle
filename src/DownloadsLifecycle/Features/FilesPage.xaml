@@ -85,7 +85,7 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel x:Name="Details">
                         <ui:TextBlock Text="{Binding Name}" FontTypography="BodyStrong" TextWrapping="Wrap" />
-                        <ui:TextBlock Text="{Binding Badge}" FontTypography="Caption" TextWrapping="Wrap" Margin="0,4,0,0"
+                        <ui:TextBlock Text="{Binding BadgeTip}" FontTypography="Caption" TextWrapping="Wrap" Margin="0,4,0,0"
                                       Foreground="{DynamicResource SystemFillColorCautionBrush}" />
                         <WrapPanel Margin="0,10,0,0">
                             <ui:Button Content="{l:T Inbox.Keep}" Click="KeepClick" Margin="0,0,4,4" Padding="10,4" />

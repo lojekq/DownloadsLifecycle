@@ -91,6 +91,7 @@ public static class DemoData
         [
             new(now.AddHours(-3), "move", Dir + "lecture-07.mp4", 734 * MB, "", "user", @"D:\Video\Courses\lecture-07.mp4"),
             new(now.AddHours(-5), "recycle", Dir + "report-final (1).pdf", 2 * MB, "duplicate|report-final.pdf", "rule:duplicate"),
+            new(now.AddHours(-25), "restore", Dir + "OBS-Studio-30.2.3-Windows-Installer.exe", 140 * MB, "", "user"),
             new(now.AddHours(-26), "recycle", Dir + "OBS-Studio-30.2.3-Windows-Installer.exe", 140 * MB, "installer|OBS Studio 30.2.3", "user"),
             new(now.AddHours(-27), "recycle", Dir + "wallpapers.zip", 56 * MB, "expired", "rule:expired"),
             new(now.AddHours(-28), "ttl", Dir + "scrcpy-win64-v3.1.zip", 7 * MB, "7d", "user"),

@@ -48,7 +48,7 @@
             </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
 
-        <!-- "Let go": 8 s to undo, whatever page it came from -->
+        <!-- "To Recycle Bin": 8 s to undo, whatever page it came from -->
         <Border x:Name="UndoBar" Grid.Row="3" Margin="24,0,24,16" Padding="16,8" CornerRadius="6" Visibility="Collapsed"
                 Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
             <Grid>

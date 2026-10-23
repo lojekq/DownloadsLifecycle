@@ -19,6 +19,9 @@ public sealed class Row(Item item, DateTime nowUtc)
     public string Key => Item.Key;
     public string Name => Item.Name;
     public string? Badge { get; } = Fmt.Badge(item, nowUtc);
+    /// <summary>The badge's tooltip: for a duplicate, what made it one.</summary>
+    public string? BadgeTip => Item.Suggestion?.Type == "duplicate" && Badge is not null
+        ? string.Format(Loc.T("Badge.DuplicateTip"), Item.Suggestion.Subject, Fmt.Size(Item.Size)) : Badge;
     public bool Cleanable { get; } = Rules.ToClean(item, nowUtc);
     public bool IsRule => Item.Suggestion?.Type == "rule";
     public string FolderText => System.IO.Path.GetDirectoryName(Item.Path) ?? "";

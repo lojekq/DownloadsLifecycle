@@ -133,9 +133,9 @@ public class SafetyTests
     {
         var now = DateTime.UtcNow;
         var s = new Settings { AutoDuplicates = true };
-        Item D(string name, string? subject, double days = 2) => new()
+        Item D(string name, string? subject, double days = 2, long size = 100) => new()
         {
-            Key = name, Path = @"C:\Demo\Downloads\" + name, Size = 100, Sha256 = "h", CreatedUtc = now.AddDays(-days),
+            Key = name, Path = @"C:\Demo\Downloads\" + name, Size = size, Sha256 = "h", HashStamp = $"{size}:0", CreatedUtc = now.AddDays(-days),
             Suggestion = subject is null ? null : new("duplicate", "exact", subject),
         };
         var orig = D("a.pdf", null);
@@ -144,6 +144,37 @@ public class SafetyTests
         Assert.HasCount(0, Rules.AutoPlan([copy], now, now.AddHours(-1), false, s));                          // original gone: nothing
         Assert.HasCount(0, Rules.AutoPlan([orig, D("b.pdf", "a.pdf")], now, now.AddHours(-1), false, s));     // not a copy name: suggestion only
         Assert.HasCount(0, Rules.AutoPlan([orig, D("a (1).pdf", "a.pdf", days: 0.5)], now, now.AddHours(-1), false, s)); // younger than 24 h
+        // the name is never enough: the same size and a hash of the file as it is now
+        Assert.HasCount(0, Rules.AutoPlan([orig, D("a (1).pdf", "a.pdf", size: 101)], now, now.AddHours(-1), false, s));
+        Assert.HasCount(0, Rules.AutoPlan([orig with { MtimeUtc = now }, copy], now, now.AddHours(-1), false, s)); // original changed since hashing
+        Assert.HasCount(0, Rules.AutoPlan([orig, copy with { Sha256 = "other" }], now, now.AddHours(-1), false, s));
+    }
+
+    [TestMethod]
+    public void JournalRowsSettleAfterRestoreOrEmptiedBin()
+    {
+        var t = new DateTime(2026, 10, 20, 12, 0, 0, DateTimeKind.Utc);
+        const string p = @"C:\Demo\Downloads\dl-test-a.pdf";
+        var recycled = new JournalEntry(t, "recycle", p, 1, "", "user");
+        var asked = 0;
+        List<(string Path, DateTime DeletedUtc)>? Bin(params (string, DateTime)[] items) { asked++; return [.. items]; }
+        bool Exists(string _) => false;
+
+        Assert.IsNull(JournalRow.Settle(recycled, [recycled], () => Bin((p, t.AddSeconds(3))), Exists));          // still in the Bin: buttons
+        Assert.AreEqual("gone", JournalRow.Settle(recycled, [recycled], () => Bin(), Exists));                     // emptied: deleted permanently
+        Assert.AreEqual("gone", JournalRow.Settle(recycled, [recycled], () => Bin((p, t.AddHours(1))), Exists));   // a later recycle of the same name
+        Assert.AreEqual("back", JournalRow.Settle(recycled, [recycled], () => Bin(), _ => true));                  // restored by hand
+        Assert.IsNull(JournalRow.Settle(recycled, [recycled], () => null, Exists));                                // the Shell said nothing: claim nothing
+        asked = 0;
+        var restored = new JournalEntry(t.AddMinutes(5), "restore", p, 1, "", "user");
+        Assert.AreEqual("back", JournalRow.Settle(recycled, [restored, recycled], () => Bin(), Exists));
+        Assert.AreEqual(0, asked); // the journal answered, the Bin was not walked
+
+        var moved = new JournalEntry(t, "move", p, 1, "", "user", @"D:\x\dl-test-a.pdf");
+        Assert.IsNull(JournalRow.Settle(moved, [moved], () => Bin(), Exists));
+        var back = new JournalEntry(t.AddMinutes(1), "move", @"D:\x\dl-test-a.pdf", 1, "return", "user", p);
+        Assert.AreEqual("back", JournalRow.Settle(moved, [back, moved], () => Bin(), Exists));
+        Assert.IsNull(JournalRow.Settle(back, [back, moved], () => Bin(), Exists));
     }
 
     [TestMethod]

@@ -5,7 +5,7 @@ using DownloadsLifecycle.Shell;
 
 namespace DownloadsLifecycle.Features;
 
-/// <summary>The triage screen: new files, cleanup offers, lifetimes ending within a day. Keep / Move / Let go / Lifetime, K M Del T.</summary>
+/// <summary>The triage screen: new files, cleanup offers, lifetimes ending within a day. Keep / Move / To Recycle Bin / Lifetime, K M Del T.</summary>
 public partial class InboxPage
 {
     public static InboxPage? Current { get; private set; }

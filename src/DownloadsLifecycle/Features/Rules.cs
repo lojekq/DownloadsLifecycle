@@ -112,7 +112,7 @@ namespace DownloadsLifecycle.Features
             if (s.AutoDuplicates)
                 foreach (var i in items.Where(i => !i.Kept && i.Suggestion?.Type == "duplicate" && Small(i) && nowUtc - i.CreatedUtc >= TimeSpan.FromHours(s.GraceHours)))
                     if (CopySuffix.Original(i.Name) is { } orig && string.Equals(orig, i.Suggestion!.Subject, StringComparison.OrdinalIgnoreCase)
-                        && items.Any(k => k.Key != i.Key && k.Name == i.Suggestion.Subject && k.Sha256 == i.Sha256 && k.Sha256 is not null)
+                        && items.Any(k => k.Key != i.Key && k.Name == i.Suggestion.Subject && Duplicates.SameContent(k, i))
                         && plan.All(p => p.Item1.Key != i.Key))
                         plan.Add((i, "rule:duplicate"));
             bool Settled(Item i) => i.Suggestion?.FoundUtc is { } f && nowUtc - f >= TimeSpan.FromDays(s.ExactDays) && Small(i) && !i.Kept
@@ -124,7 +124,7 @@ namespace DownloadsLifecycle.Features
             return plan;
         }
 
-        /// <summary>v1.0 inbox line: files let go into the Recycle Bin this calendar month (local time), by you or a rule, minus the restored ones.</summary>
+        /// <summary>v1.0 inbox line: files moved to the Recycle Bin this calendar month (local time), by you or a rule, minus the restored ones.</summary>
         public static (int Count, long Bytes) FreedThisMonth(IEnumerable<JournalEntry> journal, DateTime nowLocal)
         {
             var month = journal.Where(e => e.T.ToLocalTime() is var t && t.Year == nowLocal.Year && t.Month == nowLocal.Month).ToList();

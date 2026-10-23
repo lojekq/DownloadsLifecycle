@@ -149,33 +149,51 @@ public static class RecycleBin
     public static bool Restore(string path, DateTime deletedUtc)
     {
         if (Args.Current.Demo) return true;
-        var dir = Path.GetDirectoryName(path)!.TrimEnd('\\');
-        var name = Path.GetFileName(path);
-        dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application")!)!;
-        try
+        return Walk(items =>
         {
-            dynamic? best = null;
-            var gap = double.MaxValue;
-            foreach (dynamic item in shell.NameSpace(10).Items())
-            {
-                if (item.ExtendedProperty("System.Recycle.DeletedFrom") is not string from || !string.Equals(from.TrimEnd('\\'), dir, StringComparison.OrdinalIgnoreCase)) continue;
-                string shown = item.Name, stored = item.Path; // Name may lack the extension when Explorer hides them; the $R… path keeps it
-                if (!string.Equals(Path.GetExtension(stored), Path.GetExtension(name), StringComparison.OrdinalIgnoreCase)
-                    || !(string.Equals(shown, name, StringComparison.OrdinalIgnoreCase) || string.Equals(shown, Path.GetFileNameWithoutExtension(name), StringComparison.OrdinalIgnoreCase)))
-                    continue;
-                var when = item.ExtendedProperty("System.Recycle.DateDeleted") is DateTime d ? d.ToUniversalTime() : DateTime.MinValue;
-                if (Math.Abs((when - deletedUtc).TotalSeconds) is var g && g < gap) (best, gap) = (item, g);
-            }
+            var best = items.Where(i => string.Equals(i.Path, path, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(i => Math.Abs((i.DeletedUtc - deletedUtc).TotalSeconds)).Select(i => i.Item).FirstOrDefault();
             if (best is null) return false;
             best.InvokeVerb("undelete");
             for (var n = 0; n < 30 && !Path.Exists(path); n++) Thread.Sleep(100); // the Shell may finish a moment later
             return Path.Exists(path);
+        });
+    }
+
+    /// <summary>Original path and deletion time of everything in the Recycle Bin (all drives); null when the Shell would not say.</summary>
+    public static List<(string Path, DateTime DeletedUtc)>? Contents() => Walk(items => items.Select(i => (i.Path, i.DeletedUtc)).ToList());
+
+    /// <summary>Is this recycle still in the Bin? Same original path, deleted within two minutes of the journal entry.</summary>
+    public static bool Holds(IEnumerable<(string Path, DateTime DeletedUtc)> bin, string path, DateTime deletedUtc) =>
+        bin.Any(b => string.Equals(b.Path, path, StringComparison.OrdinalIgnoreCase) && Math.Abs((b.DeletedUtc - deletedUtc).TotalMinutes) < 2);
+
+    static T? Walk<T>(Func<IEnumerable<(dynamic Item, string Path, DateTime DeletedUtc)>, T> use)
+    {
+        dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application")!)!;
+        try
+        {
+            IEnumerable<(dynamic Item, string Path, DateTime DeletedUtc)> items = Items(shell.NameSpace(10).Items());
+            return use(items);
         }
         catch (Exception e) when (e is COMException or Microsoft.CSharp.RuntimeBinder.RuntimeBinderException or InvalidCastException)
         {
-            Log.Warn("restore failed: " + Fmt.Err(e));
-            return false;
+            Log.Warn("recycle bin: " + Fmt.Err(e));
+            return default;
         }
         finally { Marshal.FinalReleaseComObject(shell); }
+    }
+
+    static IEnumerable<(dynamic Item, string Path, DateTime DeletedUtc)> Items(dynamic items)
+    {
+        foreach (dynamic item in items)
+        {
+            if (item.ExtendedProperty("System.Recycle.DeletedFrom") is not string from) continue;
+            string shown = item.Name, ext = Path.GetExtension((string)item.Path); // Name lacks the extension when Explorer hides them; the $R… path keeps it
+            var name = string.Equals(Path.GetExtension(shown), ext, StringComparison.OrdinalIgnoreCase) ? shown : shown + ext;
+            // the Shell gives the FILETIME as is: UTC, but Kind Unspecified (ToUniversalTime would shift it by the time zone)
+            var when = item.ExtendedProperty("System.Recycle.DateDeleted") is DateTime d
+                ? d.Kind == DateTimeKind.Local ? d.ToUniversalTime() : DateTime.SpecifyKind(d, DateTimeKind.Utc) : DateTime.MinValue;
+            yield return (item, Path.Combine(from, name), when);
+        }
     }
 }

@@ -30,34 +30,32 @@
         <DataGrid x:Name="Table" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True" SelectionMode="Single" HeadersVisibility="Column"
                   GridLinesVisibility="None" CanUserResizeRows="False" CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="{l:T Journal.Time}" Binding="{Binding Time}" Width="135" />
-                <DataGridTextColumn Header="{l:T Journal.Action}" Binding="{Binding Action}" Width="120" />
-                <DataGridTemplateColumn Header="{l:T Files.Name}" Width="*" MinWidth="180">
+                <DataGridTextColumn Header="{l:T Journal.Time}" Binding="{Binding Time}" Width="Auto" />
+                <DataGridTextColumn Header="{l:T Journal.Action}" Binding="{Binding Action}" Width="Auto" />
+                <DataGridTemplateColumn Header="{l:T Files.Name}" Width="*" MinWidth="140">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type f:JournalRow}">
                             <TextBlock Text="{Binding Name}" ToolTip="{Binding Where}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{l:T Journal.Reason}" Width="*" MinWidth="160">
+                <DataGridTemplateColumn Header="{l:T Journal.Reason}" Width="*" MinWidth="120">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type f:JournalRow}">
                             <TextBlock Text="{Binding Reason}" ToolTip="{Binding Reason}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="{l:T Journal.By}" Binding="{Binding By}" Width="125" />
+                <DataGridTextColumn Header="{l:T Journal.By}" Binding="{Binding By}" Width="Auto" />
                 <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate DataType="{x:Type f:JournalRow}">
                             <Grid>
+                                <ui:TextBlock Text="{Binding State}" Appearance="Secondary" VerticalAlignment="Center" Margin="0,0,8,0" />
                                 <ui:Button Content="{l:T Journal.Return}" Padding="8,2" Click="ReturnClick"
                                            Visibility="{Binding CanReturn, Converter={StaticResource Vis}}" />
-                                <StackPanel Orientation="Horizontal" Visibility="{Binding InBin, Converter={StaticResource Vis}}">
-                                    <ui:Button Content="{l:T Journal.Restore}" Padding="8,2" Margin="0,0,4,0" Click="RestoreClick" />
-                                    <ui:Button Icon="{ui:SymbolIcon Delete24}" Padding="6,3" Click="BinClick" ToolTip="{l:T Journal.ShowInBin}" AutomationProperties.Name="{l:T Journal.ShowInBin}"
-                                           />
-                                </StackPanel>
+                                <ui:Button Content="{l:T Journal.Restore}" Padding="8,2" Click="RestoreClick"
+                                           Visibility="{Binding InBin, Converter={StaticResource Vis}}" />
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

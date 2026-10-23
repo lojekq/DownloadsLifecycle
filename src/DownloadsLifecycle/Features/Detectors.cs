@@ -35,6 +35,10 @@ public static class Duplicates
         ?? same.Where(i => CopySuffix.Original(i.Name) is null).MinBy(i => i.CreatedUtc)
         ?? same.MinBy(i => i.CreatedUtc)!;
 
+    /// <summary>The same size and SHA-256, both hashes taken from the files as they are now. Names never decide.</summary>
+    public static bool SameContent(Item a, Item b) =>
+        a.Size == b.Size && a.Sha256 is not null && a.Sha256 == b.Sha256 && a.HashStamp == a.Stamp && b.HashStamp == b.Stamp;
+
     /// <summary>Files with a size twin, hashed (cached by size+mtime). Returns key → suggestion for every non-keeper.</summary>
     public static Dictionary<string, Suggestion> Find(Index index, CancellationToken stop)
     {

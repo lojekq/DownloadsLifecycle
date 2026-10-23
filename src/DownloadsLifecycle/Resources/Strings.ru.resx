@@ -70,7 +70,7 @@
   <data name="Notice.Title" xml:space="preserve"><value>Не выполнено</value></data>
   <data name="Inbox.Keep" xml:space="preserve"><value>Оставить</value></data>
   <data name="Inbox.Move" xml:space="preserve"><value>Переложить…</value></data>
-  <data name="Inbox.Release" xml:space="preserve"><value>Отпустить</value></data>
+  <data name="Inbox.Release" xml:space="preserve"><value>В Корзину</value></data>
   <data name="Inbox.Ttl" xml:space="preserve"><value>Срок</value></data>
   <data name="Inbox.MarkSeen" xml:space="preserve"><value>Всё просмотрено</value></data>
   <data name="Inbox.AcceptAll" xml:space="preserve"><value>Принять все предложения…</value></data>
@@ -79,7 +79,7 @@
   <data name="Inbox.Summary" xml:space="preserve"><value>Предложено к очистке: {0}, {1}</value></data>
   <data name="Inbox.NothingToClean" xml:space="preserve"><value>Сейчас нечего убирать.</value></data>
   <data name="Inbox.NextReminder" xml:space="preserve"><value>Следующее напоминание в {0}.</value></data>
-  <data name="Inbox.Released" xml:space="preserve"><value>Отпущено: {0} · освобождено {1}</value></data>
+  <data name="Inbox.Released" xml:space="preserve"><value>В Корзине: {0} · освобождено {1}</value></data>
   <data name="Welcome.Found" xml:space="preserve"><value>Найдено: {0}, {1}; источник известен у {2}.</value></data>
   <data name="Welcome.Rules" xml:space="preserve"><value>Без вас ничего не удаляется. Два правила могут делать это сами; оба выключены, их можно включить позже в настройках.</value></data>
   <data name="Welcome.Open" xml:space="preserve"><value>Открыть входящие</value></data>
@@ -87,7 +87,7 @@
   <data name="Rules.Expired.Note" xml:space="preserve"><value>Только файлы, которым вы сами задали срок. Если их больше лимита за раз или файл больше лимита размера, они ждут во входящих.</value></data>
   <data name="Rules.Duplicates" xml:space="preserve"><value>Точные копии → Корзина</value></data>
   <data name="Rules.Duplicates.Note" xml:space="preserve"><value>Только копии с именем вида «file (1).pdf» или «file - копия.pdf» и тем же содержимым, что у оригинала. Оригинал остаётся всегда.</value></data>
-  <data name="Confirm.Title" xml:space="preserve"><value>Отпустить предложенные файлы?</value></data>
+  <data name="Confirm.Title" xml:space="preserve"><value>Переместить предложенные файлы в Корзину?</value></data>
   <data name="Confirm.Text" xml:space="preserve"><value>{0}, {1} уйдут в Корзину. 8 секунд можно отменить, потом их можно вернуть из Корзины.</value></data>
   <data name="Confirm.More" xml:space="preserve"><value>…и ещё {0}</value></data>
   <data name="Confirm.Cancel" xml:space="preserve"><value>Отмена</value></data>
@@ -108,7 +108,7 @@
   <data name="Files.Copy" xml:space="preserve"><value>Копировать</value></data>
   <data name="Files.Zone" xml:space="preserve"><value>Зона</value></data>
   <data name="Files.OpenFolder" xml:space="preserve"><value>Показать в папке</value></data>
-  <data name="Journal.Subtitle" xml:space="preserve"><value>Всё, что отпущено, перенесено, получило срок или оставлено: вами или правилом. Навсегда ничего не удаляется.</value></data>
+  <data name="Journal.Subtitle" xml:space="preserve"><value>Всё, что ушло в Корзину или в другую папку, получило срок или оставлено: вами или правилом. Сама программа ничего не удаляет навсегда.</value></data>
   <data name="Journal.RulesOnly" xml:space="preserve"><value>Только правила</value></data>
   <data name="Journal.Bin" xml:space="preserve"><value>Открыть Корзину</value></data>
   <data name="Journal.Time" xml:space="preserve"><value>Время</value></data>
@@ -116,7 +116,6 @@
   <data name="Journal.Reason" xml:space="preserve"><value>Почему</value></data>
   <data name="Journal.By" xml:space="preserve"><value>Кто</value></data>
   <data name="Journal.Return" xml:space="preserve"><value>Вернуть</value></data>
-  <data name="Journal.ShowInBin" xml:space="preserve"><value>Показать в Корзине</value></data>
   <data name="Journal.Empty" xml:space="preserve"><value>Пока ничего не происходило.</value></data>
   <data name="Journal.ReturnGone" xml:space="preserve"><value>Файла уже нет там, куда он был перенесён.</value></data>
   <data name="Op.recycle" xml:space="preserve"><value>В Корзину</value></data>
@@ -253,7 +252,7 @@
   <data name="Journal.Restore" xml:space="preserve"><value>Вернуть из Корзины</value></data>
   <data name="Journal.RestoreTaken" xml:space="preserve"><value>На его месте уже лежит файл с таким именем.</value></data>
   <data name="Journal.RestoreGone" xml:space="preserve"><value>В Корзине его уже нет.</value></data>
-  <data name="Op.restore" xml:space="preserve"><value>Возвращён из Корзины</value></data>
+  <data name="Op.restore" xml:space="preserve"><value>Возвращён</value></data>
   <data name="Rule.site" xml:space="preserve"><value>сайт</value></data>
   <data name="Rule.installer" xml:space="preserve"><value>установлено</value></data>
   <data name="Rule.archive" xml:space="preserve"><value>распакован</value></data>
@@ -270,4 +269,7 @@
   <data name="Whence.Page" xml:space="preserve"><value>Страница: {0}</value></data>
   <data name="Whence.Url" xml:space="preserve"><value>Адрес файла: {0}</value></data>
   <data name="Whence.Downloaded" xml:space="preserve"><value>Скачан: {0}</value></data>
+  <data name="Journal.State.back" xml:space="preserve"><value>Возвращён</value></data>
+  <data name="Journal.State.gone" xml:space="preserve"><value>Удалён навсегда</value></data>
+  <data name="Badge.DuplicateTip" xml:space="preserve"><value>Тот же размер ({1}) и содержимое (SHA-256), что у {0}</value></data>
 </root>

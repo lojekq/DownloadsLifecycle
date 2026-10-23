@@ -70,7 +70,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Notice.Title" xml:space="preserve"><value>Not done</value></data>
   <data name="Inbox.Keep" xml:space="preserve"><value>Keep</value></data>
   <data name="Inbox.Move" xml:space="preserve"><value>Move…</value></data>
-  <data name="Inbox.Release" xml:space="preserve"><value>Let go</value></data>
+  <data name="Inbox.Release" xml:space="preserve"><value>To Recycle Bin</value></data>
   <data name="Inbox.Ttl" xml:space="preserve"><value>Lifetime</value></data>
   <data name="Inbox.MarkSeen" xml:space="preserve"><value>Mark all as seen</value></data>
   <data name="Inbox.AcceptAll" xml:space="preserve"><value>Accept all suggestions…</value></data>
@@ -79,7 +79,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Inbox.Summary" xml:space="preserve"><value>Suggested for cleanup: {0}, {1}</value></data>
   <data name="Inbox.NothingToClean" xml:space="preserve"><value>Nothing to clean up right now.</value></data>
   <data name="Inbox.NextReminder" xml:space="preserve"><value>Next reminder at {0}.</value></data>
-  <data name="Inbox.Released" xml:space="preserve"><value>Let go: {0} · {1} freed</value></data>
+  <data name="Inbox.Released" xml:space="preserve"><value>Moved to the Recycle Bin: {0} · {1} freed</value></data>
   <data name="Welcome.Found" xml:space="preserve"><value>Found {0}, {1}; the source is known for {2}.</value></data>
   <data name="Welcome.Rules" xml:space="preserve"><value>Nothing is deleted without you. Two rules can do it for you; both are off, and you can change this later in Settings.</value></data>
   <data name="Welcome.Open" xml:space="preserve"><value>Open the inbox</value></data>
@@ -87,7 +87,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Rules.Expired.Note" xml:space="preserve"><value>Only files you gave a lifetime yourself. More than the limit at once, or bigger than the size limit: they wait in the inbox.</value></data>
   <data name="Rules.Duplicates" xml:space="preserve"><value>Exact copies → Recycle Bin</value></data>
   <data name="Rules.Duplicates.Note" xml:space="preserve"><value>Only copies named like "file (1).pdf" or "file - Copy.pdf" with exactly the same contents as the original. The original always stays.</value></data>
-  <data name="Confirm.Title" xml:space="preserve"><value>Let go of the suggested files?</value></data>
+  <data name="Confirm.Title" xml:space="preserve"><value>Move the suggested files to the Recycle Bin?</value></data>
   <data name="Confirm.Text" xml:space="preserve"><value>{0}, {1} go to the Recycle Bin. You can still undo for 8 seconds, and restore them from the Recycle Bin later.</value></data>
   <data name="Confirm.More" xml:space="preserve"><value>…and {0} more</value></data>
   <data name="Confirm.Cancel" xml:space="preserve"><value>Cancel</value></data>
@@ -108,7 +108,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Files.Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="Files.Zone" xml:space="preserve"><value>Zone</value></data>
   <data name="Files.OpenFolder" xml:space="preserve"><value>Show in folder</value></data>
-  <data name="Journal.Subtitle" xml:space="preserve"><value>Every let go, move, lifetime and keep: by you or by a rule. Nothing is deleted permanently.</value></data>
+  <data name="Journal.Subtitle" xml:space="preserve"><value>Everything moved to the Recycle Bin or to a folder, given a lifetime or kept: by you or by a rule. The app never deletes anything permanently.</value></data>
   <data name="Journal.RulesOnly" xml:space="preserve"><value>Rules only</value></data>
   <data name="Journal.Bin" xml:space="preserve"><value>Open the Recycle Bin</value></data>
   <data name="Journal.Time" xml:space="preserve"><value>Time</value></data>
@@ -116,7 +116,6 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Journal.Reason" xml:space="preserve"><value>Why</value></data>
   <data name="Journal.By" xml:space="preserve"><value>By</value></data>
   <data name="Journal.Return" xml:space="preserve"><value>Return</value></data>
-  <data name="Journal.ShowInBin" xml:space="preserve"><value>Show in Recycle Bin</value></data>
   <data name="Journal.Empty" xml:space="preserve"><value>Nothing has happened yet.</value></data>
   <data name="Journal.ReturnGone" xml:space="preserve"><value>The file is no longer where it was moved to.</value></data>
   <data name="Op.recycle" xml:space="preserve"><value>To Recycle Bin</value></data>
@@ -141,7 +140,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Safety.Grace" xml:space="preserve"><value>Grace period, hours</value></data>
   <data name="Safety.Grace.Note" xml:space="preserve"><value>The duplicates rule never touches younger files.</value></data>
   <data name="Safety.MaxSize" xml:space="preserve"><value>Size limit for rules, GB</value></data>
-  <data name="Safety.MaxSize.Note" xml:space="preserve"><value>Bigger files are never let go by a rule, only by you.</value></data>
+  <data name="Safety.MaxSize.Note" xml:space="preserve"><value>A rule never moves bigger files to the Recycle Bin, only you do.</value></data>
   <data name="Safety.Mass" xml:space="preserve"><value>Ask when more lifetimes end at once than</value></data>
   <data name="Safety.Mass.Note" xml:space="preserve"><value>After a holiday or a switched-off PC, they wait in the inbox for your OK.</value></data>
   <data name="Settings.Reminder" xml:space="preserve"><value>Reminder</value></data>
@@ -270,4 +269,7 @@ The program, its Start menu shortcut, autostart and the entry in Settings → Ap
   <data name="Whence.Page" xml:space="preserve"><value>Page: {0}</value></data>
   <data name="Whence.Url" xml:space="preserve"><value>File address: {0}</value></data>
   <data name="Whence.Downloaded" xml:space="preserve"><value>Downloaded: {0}</value></data>
+  <data name="Journal.State.back" xml:space="preserve"><value>Returned</value></data>
+  <data name="Journal.State.gone" xml:space="preserve"><value>Deleted permanently</value></data>
+  <data name="Badge.DuplicateTip" xml:space="preserve"><value>Same size ({1}) and contents (SHA-256) as {0}</value></data>
 </root>
